@@ -1,0 +1,17 @@
+# Sistema
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Dependências (caso um dia entre build)
+node_modules/
+
+# Arquivos temporários
+*.log
+*.tmp
