@@ -658,6 +658,46 @@ a{color:inherit;}
 }
 
 /* --------------------------------------------------------------------------
+   Página de download — um botão só, centralizada na tela
+   -------------------------------------------------------------------------- */
+.solo{
+  min-height:calc(100vh - 170px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:24px 0 48px;
+}
+.solo-card{
+  background:var(--surface);
+  color:var(--text);
+  border-radius:var(--r-card);
+  box-shadow:var(--shadow-lg);
+  padding:30px 20px;
+  width:100%;
+  max-width:var(--formw);
+}
+.solo-card h1{
+  color:var(--navy-800);
+  font-size:26px;
+  margin-bottom:10px;
+}
+.solo-card .lead{
+  font-size:16px;
+  color:var(--muted);
+  margin-bottom:24px;
+}
+.solo-file{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:var(--muted);
+  margin-top:14px;
+}
+
+/* --------------------------------------------------------------------------
    Política de privacidade
    -------------------------------------------------------------------------- */
 .doc{
@@ -731,6 +771,10 @@ a{color:inherit;}
   .steps{grid-template-columns:repeat(3,1fr);max-width:860px;}
   .step{flex-direction:column;align-items:flex-start;gap:10px;}
   .thanks-alert{max-width:680px;}
+
+  .solo-card{padding:48px 44px;max-width:620px;}
+  .solo-card h1{font-size:34px;}
+  .solo-card .lead{font-size:18px;}
 
   .doc{padding:40px 44px;}
 

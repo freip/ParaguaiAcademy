@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baixar o guia | Paraguai Academy</title>
+<meta name="description" content="Baixe o guia gratuito Importe Sem Sair de Casa, da Paraguai Academy.">
+<meta name="theme-color" content="#071E45">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+<!-- =========================================================================
+     META PIXEL — mesmo [PIXEL_ID] das outras páginas.
+     ========================================================================= -->
+<script>
+  window.PIXEL_ID = '[PIXEL_ID]';
+  if (window.PIXEL_ID && window.PIXEL_ID.indexOf('[') === -1) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', window.PIXEL_ID);
+    fbq('track', 'PageView');
+  }
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+  src="https://www.facebook.com/tr?id=[PIXEL_ID]&ev=PageView&noscript=1"></noscript>
+<!-- ===================== FIM META PIXEL ===================== -->
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="./" aria-label="Paraguai Academy — página inicial">
+      <span class="logo-word">PARAGUAI</span>
+      <svg class="logo-chevrons" width="26" height="18" viewBox="0 0 34 24" aria-hidden="true" focusable="false">
+        <path d="M3 4 L11 12 L3 20" fill="none" stroke="#0F7A3D" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 4 L24 12 L16 20" fill="none" stroke="#F4B223" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-sub">ACADEMY</span>
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="solo">
+      <div class="solo-card">
+
+        <h1>Importe Sem Sair de Casa, <span style="color:#D9980A">Com Segurança</span></h1>
+        <p class="lead">Seu guia gratuito está pronto. É só baixar.</p>
+
+        <!-- ================================================================
+             O ARQUIVO
+             href     = caminho real do PDF dentro de assets/
+             download = nome com que ele chega no celular da pessoa
+             Se trocar o PDF, confira os dois.
+             ================================================================ -->
+        <a class="btn btn-primary btn-block"
+           id="btn-download"
+           href="assets/Paraguai_Academy_Importe_Sem_Sair_de_Casa.pdf"
+           download="Paraguai Academy - Importe Sem Sair de Casa.pdf">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3v11m0 0 4-4m-4 4-4-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          BAIXAR O PDF
+        </a>
+
+        <span class="solo-file">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M14 3v5h5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          PDF · 5 páginas
+        </span>
+
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© <span id="ano">2026</span> Paraguai Academy — Mentoria de Importação</p>
+    <a href="politica-privacidade.html">Política de Privacidade</a>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('ano').textContent = new Date().getFullYear();
+
+  // Mede o download no Pixel, se ele estiver configurado.
+  document.getElementById('btn-download').addEventListener('click', function () {
+    if (typeof window.fbq === 'function') {
+      try { window.fbq('trackCustom', 'BaixouPDF'); } catch (e) {}
+    }
+  });
+</script>
+
+</body>
+</html>
