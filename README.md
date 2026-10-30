@@ -88,21 +88,111 @@ var CONFIG = {
 
 ---
 
-## 2. Configurar o Pixel da Meta
+## 2. Rastreamento do Meta
 
-Em **`index.html`** e **`obrigado.html`**, troque `[PIXEL_ID]` pelo ID numérico
-do seu pixel. Aparece em 3 lugares por arquivo (script, `noscript` e a URL da
-imagem). Um Localizar/Substituir em cada arquivo resolve.
+Pixel **`1888863052133186`**, já ativo nas quatro páginas (`index`,
+`obrigado`, `baixar`, `politica-privacidade`).
 
-- `PageView` dispara ao carregar as duas páginas.
-- **`Lead`** dispara no envio do formulário (`assets/form.js`), junto com o
-  `content_category` = o que a pessoa quer importar — dá para otimizar campanha
-  por tipo de produto.
-- Enquanto o `[PIXEL_ID]` não for trocado, o script fica inerte e não carrega
-  nada. Nada quebra.
+### 2.1 Quando cada evento dispara
 
-Para testar: instale a extensão **Meta Pixel Helper** no Chrome e envie o
-formulário.
+| Evento | Onde | Quando |
+|---|---|---|
+| `PageView` | todas as páginas | ao carregar |
+| **`Lead`** | `assets/form.js` | **só depois** do Apps Script confirmar o envio |
+| `ClicouGrupoVIP` | `assets/obrigado.js` | clique no botão do Grupo VIP |
+| `BaixouPDF` | `baixar.html` | clique no botão de download |
+
+O `Lead` **não** dispara no clique do botão nem quando o envio falha. A ordem
+no `form.js` é: envia → confirma → dispara o `Lead` → espera 300 ms → só então
+redireciona. Os 300 ms existem para o `fbq` despachar antes da troca de página,
+senão o evento se perde.
+
+Clique duplo não gera dois leads: há uma trava `enviando` no formulário e uma
+trava `leadDisparado` no próprio evento.
+
+### 2.2 Desduplicação
+
+Cada envio gera um `event_id` único (`crypto.randomUUID()`). O mesmo id vai
+para três lugares:
+
+```
+navegador  fbq('track','Lead', {...}, { eventID })
+servidor   /api/meta-lead  →  Meta CAPI  (event_id)
+planilha   coluna event_id
+```
+
+É isso que faz o Meta receber o evento por dois caminhos e contar **um** lead.
+A coluna na planilha serve para você conferir um lead específico contra o
+Gerenciador de Eventos.
+
+### 2.3 Origem do anúncio
+
+Capturados da URL e gravados na planilha: `utm_source`, `utm_medium`,
+`utm_campaign`, `utm_content`, `utm_term`, `fbclid`, `fbp`, `fbc`.
+
+Use esta estrutura nos anúncios:
+
+```
+utm_source=meta&utm_medium=pago&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.name}}
+```
+
+`_fbp` e `_fbc` são cookies criados pelo próprio Pixel, lidos na hora do envio.
+Se o `_fbc` ainda não existir mas houver `fbclid` na URL, ele é montado no
+formato `fb.1.<timestamp>.<fbclid>`.
+
+---
+
+## 3. API de Conversões (envio pelo servidor)
+
+`api/meta-lead.js` é uma função serverless da Vercel. Ela manda o mesmo `Lead`
+pelo servidor, o que recupera os eventos que o navegador perde (bloqueador de
+anúncio, iOS restrito, aba fechada cedo).
+
+Dados enviados: `event_name`, `event_id`, `event_time`, `action_source`,
+`event_source_url`, `client_ip_address`, `client_user_agent`, `fbp`, `fbc`,
+telefone com hash em `ph` e primeiro nome com hash em `fn`.
+
+O telefone é normalizado antes do hash (só dígitos, com `55` na frente:
+`(11) 91234-5678` → `5511912345678`) e o nome vai minúsculo e sem acento
+(`João` → `joao`). O hash é SHA-256, como o Meta exige.
+
+### 3.1 Criar o token
+
+1. [business.facebook.com/events_manager](https://business.facebook.com/events_manager)
+2. Selecione o pixel **1888863052133186**
+3. Aba **Configurações** → role até **API de Conversões**
+4. **Gerar token de acesso** → copie. Ele aparece **uma vez só**.
+
+### 3.2 Cadastrar as variáveis na Vercel
+
+No painel do projeto: **Settings → Environment Variables**. Marque os três
+ambientes (Production, Preview, Development).
+
+| Nome | Valor |
+|---|---|
+| `META_PIXEL_ID` | `1888863052133186` |
+| `META_CAPI_TOKEN` | o token do passo 3.1 |
+| `META_TEST_EVENT_CODE` | opcional, só durante os testes (ex.: `TEST12345`) |
+
+Depois de salvar, faça um **Redeploy** — variáveis novas só valem em
+implantações novas.
+
+> **O token nunca entra no repositório nem no código do navegador.** Ele só
+> existe como variável de ambiente na Vercel. Se vazar, revogue no Gerenciador
+> de Eventos e gere outro.
+
+### 3.3 Se a API falhar
+
+O formulário continua funcionando. A função sempre responde 200 e registra o
+motivo no log da Vercel; o `form.js` chama com `keepalive` e ignora a resposta.
+Sem as variáveis cadastradas, o lead ainda é gravado na planilha e o Pixel do
+navegador ainda dispara — você só perde a metade servidor da desduplicação.
+
+### 3.4 Código de teste
+
+Enquanto `META_TEST_EVENT_CODE` estiver preenchida, os eventos aparecem em
+**Gerenciador de Eventos → Testar eventos**. **Apague a variável quando
+terminar os testes** — eventos de teste não contam para otimização de campanha.
 
 ---
 

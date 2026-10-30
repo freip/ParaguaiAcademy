@@ -24,6 +24,14 @@
     // visível no código da página. Serve para barrar robô bobo.)
     SEGREDO: '',
 
+    // Função serverless da Vercel que manda o mesmo Lead pela API de
+    // Conversões. Se não existir (rodando local, por exemplo), o envio
+    // falha em silêncio e o formulário segue normal.
+    CAPI_ENDPOINT: '/api/meta-lead',
+
+    // Nome do conteúdo reportado ao Meta no evento Lead.
+    CONTENT_NAME: 'Guia Paraguai',
+
     // Página de obrigado
     PAGINA_OBRIGADO: 'obrigado.html'
   };
@@ -45,24 +53,87 @@
   $('ano').textContent = new Date().getFullYear();
 
   /* ======================================================================
-     3) UTMs — lê da URL e guarda na sessão (sobrevive à navegação interna)
-     ====================================================================== */
-  var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'];
+     3) Origem do tráfego — UTMs, fbclid e cookies do Meta
 
+     Os anúncios usam:
+       utm_source=meta&utm_medium=pago&utm_campaign={{campaign.name}}
+       &utm_term={{adset.name}}&utm_content={{ad.name}}
+     ====================================================================== */
+  var UTM_KEYS = [
+    'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'
+  ];
+
+  function guardar(chave, valor) {
+    try { sessionStorage.setItem(chave, valor); } catch (e) {}
+  }
+
+  function recuperar(chave) {
+    try { return sessionStorage.getItem(chave) || ''; } catch (e) { return ''; }
+  }
+
+  /**
+   * Lê da URL e guarda na sessão. O valor guardado sobrevive à navegação
+   * interna (ir até a política de privacidade e voltar, por exemplo).
+   */
   function capturarUtms() {
     var params = new URLSearchParams(window.location.search);
+
     UTM_KEYS.forEach(function (key) {
-      var valor = (params.get(key) || '').trim().slice(0, 120);
-      if (valor) {
-        try { sessionStorage.setItem(key, valor); } catch (e) {}
-      } else {
-        try { valor = sessionStorage.getItem(key) || ''; } catch (e) { valor = ''; }
-      }
+      var valor = (params.get(key) || '').trim().slice(0, 150);
+      if (valor) { guardar(key, valor); } else { valor = recuperar(key); }
       var campo = $(key);
       if (campo) { campo.value = valor; }
     });
+
+    // fbclid: vem na URL do anúncio. Guardamos junto o instante em que foi
+    // visto — é o timestamp usado para montar o _fbc quando o cookie
+    // ainda não existe.
+    var fbclid = (params.get('fbclid') || '').trim().slice(0, 500);
+    if (fbclid) {
+      guardar('fbclid', fbclid);
+      if (!recuperar('fbclid_ts')) { guardar('fbclid_ts', String(Date.now())); }
+    } else {
+      fbclid = recuperar('fbclid');
+    }
+    if ($('fbclid')) { $('fbclid').value = fbclid; }
   }
   capturarUtms();
+
+  function lerCookie(nome) {
+    var achado = document.cookie.split('; ').filter(function (par) {
+      return par.indexOf(nome + '=') === 0;
+    })[0];
+    return achado ? decodeURIComponent(achado.slice(nome.length + 1)) : '';
+  }
+
+  /**
+   * _fbp e _fbc são criados pelo próprio Pixel, então só são lidos na hora
+   * do envio — dar tempo ao fbq de gravá-los. Se o _fbc não existir mas
+   * houver fbclid, montamos no formato que o Meta espera:
+   *   fb.1.<timestamp>.<fbclid>
+   */
+  function lerIdentificadoresMeta() {
+    var fbclid = $('fbclid') ? $('fbclid').value : '';
+    var fbc = lerCookie('_fbc');
+
+    if (!fbc && fbclid) {
+      var ts = recuperar('fbclid_ts') || String(Date.now());
+      fbc = 'fb.1.' + ts + '.' + fbclid;
+    }
+
+    return { fbclid: fbclid, fbp: lerCookie('_fbp'), fbc: fbc };
+  }
+
+  /** Identificador único do envio, compartilhado entre Pixel e API de
+   *  Conversões. É o que faz o Meta contar um lead, e não dois. */
+  function gerarEventId() {
+    try {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return window.crypto.randomUUID();
+      }
+    } catch (e) {}
+    return 'lead-' + Date.now() + '-' + Math.random().toString(16).slice(2, 10);
+  }
 
   /* ======================================================================
      4) Máscara de WhatsApp — (00) 00000-0000
@@ -259,7 +330,7 @@
   function enviarParaPlanilha(dados) {
     if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.indexOf('COLE_AQUI') === 0) {
       console.warn('[Paraguai Academy] APPS_SCRIPT_URL não configurada em assets/form.js — o lead não foi salvo.');
-      return Promise.resolve();
+      return Promise.reject(new Error('apps_script_nao_configurado'));
     }
 
     var corpo = JSON.stringify(dados);
@@ -269,10 +340,19 @@
     // simples e o doPost recebe o JSON inteiro em e.postData.contents.
     var cabecalhos = { 'Content-Type': 'text/plain;charset=utf-8' };
 
+    // Teto de 15s para a requisição não ficar pendurada para sempre.
+    var controle = (typeof AbortController === 'function') ? new AbortController() : null;
+    var expirou = setTimeout(function () {
+      if (controle) { controle.abort(); }
+    }, 15000);
+
+    function pronto(valor) { clearTimeout(expirou); return valor; }
+
     return fetch(CONFIG.APPS_SCRIPT_URL, {
       method: 'POST',
       headers: cabecalhos,
-      body: corpo
+      body: corpo,
+      signal: controle ? controle.signal : undefined
     }).then(
       function (res) {
         if (!res.ok) { throw new Error('HTTP ' + res.status); }
@@ -289,24 +369,90 @@
         }).then(function () { return ''; });
       }
     ).then(function (texto) {
+      pronto();
       if (!texto) { return; }               // modo opaco: nada a conferir
       var resposta;
       try { resposta = JSON.parse(texto); } catch (naoEhJson) { return; }
       if (resposta && resposta.ok === false) {
         throw new Error(resposta.error || 'erro_no_servidor');
       }
+    }, function (erro) {
+      pronto();
+      throw erro;
     });
   }
 
+  /**
+   * Evento Lead do Pixel. Só é chamado depois que o Apps Script confirmou
+   * o envio — nunca no clique do botão, nunca em caso de erro.
+   */
+  var leadDisparado = false;
+
+  function dispararLead(dados, eventId) {
+    if (leadDisparado) { return; }
+    leadDisparado = true;
+
+    if (typeof window.fbq !== 'function') { return; }
+    try {
+      window.fbq('track', 'Lead', {
+        content_name: CONFIG.CONTENT_NAME,
+        interesse: dados.interesse,
+        objetivo: dados.objetivo
+      }, { eventID: eventId });
+    } catch (e) {
+      console.warn('[Paraguai Academy] fbq indisponível:', e);
+    }
+  }
+
+  /**
+   * Mesmo evento pela API de Conversões, com o MESMO event_id — é assim
+   * que o Meta junta os dois e conta um lead só.
+   *
+   * Dispara e esquece: keepalive faz a requisição sobreviver à troca de
+   * página, e qualquer falha é engolida de propósito. A API de Conversões
+   * nunca pode derrubar o formulário.
+   */
+  function enviarParaCapi(dados, eventId) {
+    try {
+      fetch(CONFIG.CAPI_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          event_id: eventId,
+          event_source_url: window.location.href,
+          nome: dados.nome,
+          whatsapp: dados.whatsapp,
+          interesse: dados.interesse,
+          objetivo: dados.objetivo,
+          fbp: dados.fbp,
+          fbc: dados.fbc
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  var enviando = false;
+
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
-    if (btn.disabled) { return; }
+
+    // Trava contra clique duplo: sem isso o Lead sairia duas vezes.
+    if (enviando) { return; }
     if (!validar()) { return; }
 
+    enviando = true;
     btn.disabled = true;
     btn.textContent = 'Enviando...';
 
     var nome = inpNome.value.trim().replace(/\s+/g, ' ');
+    var eventId = gerarEventId();
+    var meta = lerIdentificadoresMeta();
+
+    // Espelha nos campos ocultos, para dar para conferir no DevTools.
+    if ($('fbp')) { $('fbp').value = meta.fbp; }
+    if ($('fbc')) { $('fbc').value = meta.fbc; }
+
     var dados = {
       evento:       CONFIG.EVENTO,                 // roteia para a aba certa
       nome:         nome,
@@ -315,39 +461,34 @@
       objetivo:     $('objetivo').value,
       utm_source:   $('utm_source').value,
       utm_medium:   $('utm_medium').value,
-      utm_campaign: $('utm_campaign').value
+      utm_campaign: $('utm_campaign').value,
+      utm_content:  $('utm_content').value,
+      utm_term:     $('utm_term').value,
+      fbclid:       meta.fbclid,
+      fbp:          meta.fbp,
+      fbc:          meta.fbc,
+      event_id:     eventId
     };
     if (CONFIG.SEGREDO) { dados.secret = CONFIG.SEGREDO; }
 
-    // Meta Pixel — evento Lead
-    if (typeof window.fbq === 'function') {
-      try {
-        window.fbq('track', 'Lead', {
-          content_name: 'Guia Importe Sem Sair de Casa',
-          content_category: dados.interesse
-        });
-      } catch (e) {}
-    }
-
     var destino = montarUrlObrigado(primeiroNome(nome));
-
-    // Rede lenta não pode travar o lead: redireciona em no máximo 6s.
-    var jaFoi = false;
-    function irParaObrigado() {
-      if (jaFoi) { return; }
-      jaFoi = true;
-      window.location.href = destino;
-    }
-    var relogio = setTimeout(irParaObrigado, 6000);
 
     enviarParaPlanilha(dados)
       .then(function () {
-        clearTimeout(relogio);
-        irParaObrigado();
+        // A ordem aqui importa: o lead só existe depois que a planilha
+        // confirmou, então é só agora que o Lead pode sair.
+        dispararLead(dados, eventId);
+        enviarParaCapi(dados, eventId);
+
+        // 300ms de folga para o fbq despachar antes da troca de página.
+        setTimeout(function () {
+          window.location.href = destino;
+        }, 300);
       })
       .catch(function (erro) {
-        clearTimeout(relogio);
+        // Envio falhou: nenhum Lead é disparado e o botão volta ao normal.
         console.error('[Paraguai Academy] Falha no envio:', erro);
+        enviando = false;
         btn.disabled = false;
         btn.textContent = TEXTO_BTN;
         mostrarErro('geral', 'Não conseguimos enviar agora. Confira sua internet e toque novamente.');

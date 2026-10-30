@@ -24,9 +24,18 @@ var COLUNAS_CLIQUES = ['Data', 'Origem', 'Pagina', 'Dispositivo', 'Fonte', 'Sess
 /** Nome da aba da landing Paraguai Academy. Idem: criada se não existir. */
 var ABA_PARAGUAI = 'Leads Paraguai';
 
+/**
+ * A ordem aqui manda: tem que bater com o appendRow de gravarLeadParaguai.
+ *
+ * As seis ultimas foram acrescentadas a direita de proposito, em vez de
+ * reordenar — assim as linhas ja gravadas continuam alinhadas. Quem ja tem
+ * a aba criada com 8 colunas recebe as novas automaticamente, por
+ * garantirCabecalho().
+ */
 var COLUNAS_PARAGUAI = [
   'Data', 'Nome', 'WhatsApp', 'Quer importar', 'Objetivo',
-  'utm_source', 'utm_medium', 'utm_campaign'
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+  'fbclid', 'fbp', 'fbc', 'event_id'
 ];
 
 function doPost(e) {
@@ -158,7 +167,13 @@ function gravarLeadParaguai(body) {
     body.objetivo || '',       // E
     body.utm_source || '',     // F
     body.utm_medium || '',     // G
-    body.utm_campaign || ''    // H
+    body.utm_campaign || '',   // H
+    body.utm_content || '',    // I
+    body.utm_term || '',       // J
+    body.fbclid || '',         // K
+    body.fbp || '',            // L
+    body.fbc || '',            // M
+    body.event_id || ''        // N — mesmo id mandado ao Pixel e a CAPI
   ]);
 }
 
@@ -184,9 +199,6 @@ function abaDoParaguai() {
 
   if (!sheet) {
     sheet = planilha.insertSheet(ABA_PARAGUAI);
-    sheet.appendRow(COLUNAS_PARAGUAI);
-    sheet.getRange(1, 1, 1, COLUNAS_PARAGUAI.length).setFontWeight('bold');
-    sheet.setFrozenRows(1);
     sheet.setColumnWidth(1, 150); // Data
     sheet.setColumnWidth(2, 180); // Nome
     sheet.setColumnWidth(3, 150); // WhatsApp
@@ -194,7 +206,35 @@ function abaDoParaguai() {
     sheet.setColumnWidth(5, 220); // Objetivo
   }
 
+  garantirCabecalho(sheet, COLUNAS_PARAGUAI);
+
   return sheet;
+}
+
+/**
+ * Mantem o cabecalho em dia sem destruir nada.
+ *
+ * Aba vazia  -> escreve o cabecalho inteiro.
+ * Aba antiga -> acrescenta so as colunas que faltam, a direita. As colunas
+ *               e as linhas que ja existiam ficam exatamente onde estavam.
+ *
+ * E idempotente: rodar varias vezes nao duplica nem reescreve nada.
+ */
+function garantirCabecalho(sheet, colunas) {
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(colunas);
+    sheet.getRange(1, 1, 1, colunas.length).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+    return;
+  }
+
+  var existentes = sheet.getLastColumn();
+  if (existentes < colunas.length) {
+    var faltando = colunas.slice(existentes);
+    sheet.getRange(1, existentes + 1, 1, faltando.length)
+         .setValues([faltando])
+         .setFontWeight('bold');
+  }
 }
 
 /** Abrir a URL no navegador cai aqui — serve para conferir que está no ar. */
@@ -223,7 +263,13 @@ function testarParaguai() {
         objetivo: 'Começar a revender',
         utm_source: 'teste',
         utm_medium: 'manual',
-        utm_campaign: 'validacao'
+        utm_campaign: 'validacao',
+        utm_content: 'anuncio-teste',
+        utm_term: 'conjunto-teste',
+        fbclid: 'TESTE_fbclid',
+        fbp: 'fb.1.1700000000000.1234567890',
+        fbc: 'fb.1.1700000000000.TESTE_fbclid',
+        event_id: 'teste-' + new Date().getTime()
       })
     }
   });

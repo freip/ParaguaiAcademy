@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Importe Sem Sair de Casa, Com Segurança | Paraguai Academy</title>
-<meta name="description" content="Guia gratuito: o passo a passo que quem já importa usa para comprar do Paraguai sem burocracia e revender com segurança.">
+<meta name="description" content="Guia gratuito: aprenda os caminhos legais para comprar do Paraguai e receber em casa.">
 <meta name="theme-color" content="#071E45">
 <meta property="og:title" content="Importe Sem Sair de Casa, Com Segurança">
-<meta property="og:description" content="Guia gratuito com os 7 passos para importar do Paraguai e revender com segurança.">
+<meta property="og:description" content="Guia gratuito com os 7 passos para comprar do Paraguai pelos caminhos legais e receber em casa.">
 <meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,24 +16,24 @@
 <link rel="stylesheet" href="assets/style.css">
 
 <!-- =========================================================================
-     META PIXEL — troque [PIXEL_ID] pelo ID numérico do seu pixel.
-     O evento "Lead" é disparado no envio do formulário (assets/form.js).
-     Enquanto o ID não for trocado, o script fica inerte (não quebra nada).
+     META PIXEL — Paraguai Academy
+     PageView dispara aqui, ao carregar a página.
+     O evento Lead NÃO dispara aqui: ele sai em assets/form.js, e só depois
+     que o envio para o Apps Script der certo (com eventID para desduplicar
+     contra a API de Conversões).
      ========================================================================= -->
 <script>
-  window.PIXEL_ID = '[PIXEL_ID]';
-  if (window.PIXEL_ID && window.PIXEL_ID.indexOf('[') === -1) {
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', window.PIXEL_ID);
-    fbq('track', 'PageView');
-  }
+  window.PIXEL_ID = '1888863052133186';
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+  document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1888863052133186');
+  fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" alt=""
-  src="https://www.facebook.com/tr?id=[PIXEL_ID]&ev=PageView&noscript=1"></noscript>
+  src="https://www.facebook.com/tr?id=1888863052133186&ev=PageView&noscript=1"></noscript>
 <!-- ===================== FIM META PIXEL ===================== -->
 </head>
 
@@ -68,7 +68,7 @@
         </span>
 
         <h1>Importe Sem Sair de Casa, <span class="gold">Com Segurança</span></h1>
-        <p class="hero-sub">Aprenda a importar do Paraguai e revender com segurança, sem burocracia e sem pagar preço de varejo.</p>
+        <p class="hero-sub">Aprenda os caminhos legais para comprar do Paraguai e receber em casa.</p>
 
         <!-- ================================================================
              MOCKUP DA CAPA DO PDF
@@ -167,6 +167,14 @@
             <input type="hidden" name="utm_source"   id="utm_source">
             <input type="hidden" name="utm_medium"   id="utm_medium">
             <input type="hidden" name="utm_campaign" id="utm_campaign">
+            <input type="hidden" name="utm_content"  id="utm_content">
+            <input type="hidden" name="utm_term"     id="utm_term">
+
+            <!-- Identificadores do Meta: fbclid vem da URL do anúncio,
+                 _fbp e _fbc são cookies criados pelo próprio Pixel. -->
+            <input type="hidden" name="fbclid" id="fbclid">
+            <input type="hidden" name="fbp"    id="fbp">
+            <input type="hidden" name="fbc"    id="fbc">
 
             <button type="submit" class="btn btn-primary btn-block" id="submit-btn">QUERO MEU GUIA GRÁTIS</button>
 
@@ -190,7 +198,7 @@
             </div>
             <div>
               <h3>Os 7 passos para importar</h3>
-              <p>Do pedido no Paraguai até a sua porta, sem complicação e sem burocracia.</p>
+              <p>Do pedido no Paraguai até a sua porta, explicado etapa por etapa.</p>
             </div>
           </article>
 
