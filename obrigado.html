@@ -2,19 +2,18 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Grupo VIP de importação do Paraguai | Paraguai Academy</title>
-<meta name="description" content="Entre no Grupo VIP gratuito do WhatsApp: fornecedores confiáveis, frete e notas fiscais. Guia em PDF de presente.">
-<meta name="theme-color" content="#071E45">
+<meta name="description" content="Entre no Grupo VIP gratuito do WhatsApp e importe iPhone do Paraguai para revender.">
+<meta name="theme-color" content="#0e0a05">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Grupo VIP de importação do Paraguai">
-<meta property="og:description" content="Fornecedores confiáveis, frete e notas fiscais. Grátis, com guia em PDF de presente.">
+<meta property="og:description" content="Lucro de até R$ 1.300 por iPhone vindo do Paraguai.">
 <meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 
 <!-- =========================================================================
      META PIXEL — Paraguai Academy.
@@ -40,148 +39,250 @@
 <noscript><img height="1" width="1" style="display:none" alt=""
   src="https://www.facebook.com/tr?id=1888863052133186&ev=PageView&noscript=1"></noscript>
 <!-- ===================== FIM META PIXEL ===================== -->
+
+<!-- =========================================================================
+     ESTILO
+     A página é propositalmente independente de assets/style.css: ela tem um
+     layout próprio, de tela única, e não deve herdar nada do resto do site.
+     ========================================================================= -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #fff;
+    background: #0d0904;
+    background-image: radial-gradient(125% 95% at 50% 16%,
+                      #2a1a08 0%, #140d05 58%, #0d0904 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+  }
+
+  /* ---------------------------------------------------------------------
+     1. Barra do topo
+     O tamanho da frase acompanha a largura da tela para nunca quebrar em
+     duas linhas: 13px no celular de 390px, um pouco menor nos mais estreitos.
+     --------------------------------------------------------------------- */
+  .topo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 12px 14px;
+    background: #0e0a05;
+    border-bottom: 1px solid #2b2114;
+  }
+
+  .topo-selo {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #25d366;
+  }
+
+  .topo-texto {
+    font-size: clamp(10.5px, 3.33vw, 13px);
+    font-weight: 800;
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ---------------------------------------------------------------------
+     2 a 5. Miolo
+     --------------------------------------------------------------------- */
+  /* O miolo começa logo abaixo da barra, não centralizado na vertical: a
+     sobra de altura fica embaixo do botão, como no layout aprovado. */
+  main {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 50px 22px 24px;
+  }
+
+  .foto {
+    width: 250px;
+    height: 250px;
+    flex: none;
+    margin-bottom: 38px;
+    border-radius: 50%;
+    border: 5px solid #3a2c1a;
+    object-fit: cover;
+    /* A foto é vertical (~3:4) e o leque de aparelhos fica na metade de
+       cima do quadro. Puxar o recorte para 33% centraliza os iPhones no
+       círculo e corta o piso em cima e o pé embaixo. */
+    object-position: 50% 33%;
+    background: #1a1209;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, .55);
+  }
+
+  .titulo {
+    margin: 0 0 40px;
+    max-width: 340px;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.28;
+    color: #ffd21f;
+  }
+
+  .chamada {
+    margin: 0 0 16px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .botao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 18px 16px;
+    border-radius: 999px;
+    background: #25d366;
+    color: #fff;
+    /* 17px no celular de 390px; encolhe nos mais estreitos para o rótulo
+       nunca quebrar em duas linhas. */
+    font-size: clamp(13.5px, 4.36vw, 17px);
+    font-weight: 800;
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    animation: pulsa 1.6s ease-in-out infinite;
+  }
+
+  .botao svg { flex: none; }
+
+  @keyframes pulsa {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(37, 211, 102, .55), 0 8px 26px rgba(37, 211, 102, .30);
+    }
+    50% {
+      transform: scale(1.04);
+      box-shadow: 0 0 0 20px rgba(37, 211, 102, 0), 0 10px 34px rgba(37, 211, 102, .45);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(37, 211, 102, 0), 0 8px 26px rgba(37, 211, 102, .30);
+    }
+  }
+
+  /* Linha discreta abaixo do botão: diz o que circula no grupo sem
+     competir com a chamada nem com o botão. */
+  .categorias {
+    margin: 22px 0 0;
+    max-width: 300px;
+    color: #a89a84;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .botao {
+      animation: none;
+      box-shadow: 0 8px 26px rgba(37, 211, 102, .30);
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     6. Rodapé
+     --------------------------------------------------------------------- */
+  .rodape {
+    flex: none;
+    padding: 16px 22px calc(18px + env(safe-area-inset-bottom, 0px));
+    color: #7d7360;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .rodape p { margin: 0; }
+
+  /* Telas baixas (iPhone SE e afins): aperta tudo para caber sem rolar. */
+  @media (max-height: 700px) {
+    main { padding-top: 22px; }
+    .foto { width: 186px; height: 186px; margin-bottom: 24px; }
+    .titulo { font-size: 21px; margin-bottom: 24px; }
+    .chamada { font-size: 17px; margin-bottom: 14px; }
+    .categorias { margin-top: 16px; font-size: 13px; }
+  }
+
+  /* Telas muito baixas (iPhone SE antigo, 568px). */
+  @media (max-height: 620px) {
+    .foto { width: 144px; height: 144px; margin-bottom: 20px; }
+    .titulo { font-size: 20px; margin-bottom: 20px; }
+    .categorias { margin-top: 12px; }
+  }
+</style>
 </head>
 
-<body class="tem-cta-fixa">
+<body>
 
-<header class="site-header">
-  <div class="wrap">
-    <a class="logo" href="./" aria-label="Paraguai Academy — página inicial">
-      <span class="logo-word">PARAGUAI</span>
-      <svg class="logo-chevrons" width="26" height="18" viewBox="0 0 34 24" aria-hidden="true" focusable="false">
-        <path d="M3 4 L11 12 L3 20" fill="none" stroke="#0F7A3D" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16 4 L24 12 L16 20" fill="none" stroke="#F4B223" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="logo-sub">ACADEMY</span>
-    </a>
-    <span class="header-tag">Mentoria de Importação</span>
-  </div>
+<!-- 1. Barra do topo -->
+<header class="topo">
+  <span class="topo-selo" aria-hidden="true">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" focusable="false">
+      <path d="M5 12.5 L10 17.5 L19 7" stroke="#fff" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </span>
+  <span class="topo-texto">Grupo VIP de importação do Paraguai</span>
 </header>
 
 <main>
-  <div class="wrap">
-    <section class="thanks">
 
-      <!-- ==================================================================
-           CARD PRINCIPAL
-           Os href de grupo são reserva: o valor real vem da constante
-           LINK_DO_GRUPO em assets/grupo.js. Sem target="_blank" de
-           propósito — na mesma aba funciona melhor no navegador interno do
-           Instagram e do Facebook.
-           ================================================================== -->
-      <div class="thanks-card vip-card">
+  <!-- 2. Foto -->
+  <img class="foto" src="assets/iphone.jpg" width="250" height="250"
+       alt="Três iPhone Pro Max na mão, em uma loja no Paraguai"
+       onerror="this.onerror=null;this.src='iphone.jpg'">
 
-        <span class="vip-badge">🎁 Grátis + Guia em PDF de presente</span>
+  <!-- 3. Título -->
+  <h1 class="titulo">Lucro de até R$ 1.300 por iPhone vindo do Paraguai.</h1>
 
-        <h1>Grupo VIP de <span class="green">importação do Paraguai</span></h1>
+  <!-- 4. Chamada -->
+  <p class="chamada">Entre agora mesmo</p>
 
-        <p class="vip-sub">O passo a passo para importar e revender do jeito certo:
-          <strong>fornecedores confiáveis, frete e notas fiscais</strong>.
-          Tudo direto no seu WhatsApp.</p>
-
-        <a class="btn btn-whats btn-block" data-grupo-link
-           href="https://chat.whatsapp.com/CktozyU7vE9EQXjSPAumUV" rel="noopener">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12.04 2C6.6 2 2.18 6.42 2.18 11.86c0 1.9.53 3.68 1.46 5.2L2 22l5.08-1.59a9.8 9.8 0 0 0 4.96 1.33h.01c5.44 0 9.86-4.42 9.86-9.86S17.48 2 12.04 2Zm0 18.02c-1.56 0-3.08-.42-4.4-1.2l-.32-.19-3.02.95.96-2.94-.2-.33a8.14 8.14 0 0 1-1.25-4.35c0-4.52 3.68-8.2 8.2-8.2 4.53 0 8.2 3.68 8.2 8.2s-3.67 8.06-8.17 8.06Zm4.5-6.03c-.25-.12-1.46-.72-1.69-.8-.22-.09-.39-.12-.55.12-.17.25-.63.8-.78.97-.14.16-.28.18-.53.06-.24-.12-1.04-.38-1.98-1.22-.73-.65-1.22-1.46-1.37-1.7-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.3-.22.25-.86.84-.86 2.05s.88 2.38 1 2.54c.12.17 1.73 2.63 4.19 3.69.58.25 1.04.4 1.4.52.59.18 1.12.16 1.55.1.47-.07 1.46-.6 1.66-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.17-.47-.29Z"/>
-          </svg>
-          QUERO ENTRAR NO GRUPO
-        </a>
-
-        <p class="form-note">100% gratuito · Você sai quando quiser · Abre direto no WhatsApp</p>
-
-        <div class="prova">
-          <span class="avatars" aria-hidden="true">
-            <span>RS</span><span>JP</span><span>ML</span><span>AC</span>
-          </span>
-          <!-- O número vem da constante PESSOAS_NO_GRUPO em assets/obrigado.js -->
-          <span class="prova-texto" id="contador-grupo">+40 pessoas já entraram no grupo</span>
-        </div>
-
-      </div>
-
-      <!-- ==================================================================
-           O QUE VOCÊ RECEBE NO GRUPO
-           ================================================================== -->
-      <section class="vip-bloco" aria-labelledby="recebe-titulo">
-        <h2 id="recebe-titulo">O que você recebe <span class="gold">no grupo</span></h2>
-
-        <div class="benefits">
-
-          <article class="benefit">
-            <span class="benefit-icon" aria-hidden="true">📦</span>
-            <div>
-              <h3>Fornecedores confiáveis</h3>
-              <p>Onde comprar no Paraguai sem cair em golpe ou produto falsificado.</p>
-            </div>
-          </article>
-
-          <article class="benefit">
-            <span class="benefit-icon" aria-hidden="true">🚚</span>
-            <div>
-              <h3>Frete e logística</h3>
-              <p>Como a mercadoria chega até você e quanto isso custa de verdade.</p>
-            </div>
-          </article>
-
-          <article class="benefit">
-            <span class="benefit-icon" aria-hidden="true">🧾</span>
-            <div>
-              <h3>Notas e caminho legal</h3>
-              <p>CNPJ, RTU e notas fiscais para revender sem risco de apreensão.</p>
-            </div>
-          </article>
-
-        </div>
-      </section>
-
-      <!-- Presente de boas-vindas -->
-      <div class="gift-band">
-        <span aria-hidden="true">📘</span>
-        <p><strong>Presente de boas-vindas: Guia em PDF.</strong>
-          Fica fixado no topo do grupo. É só entrar e baixar.</p>
-      </div>
-
-      <!-- Caixa de ajuda -->
-      <div class="thanks-alert">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex:none;margin-top:2px">
-          <circle cx="12" cy="12" r="9" stroke="#F4B223" stroke-width="2"/>
-          <path d="M12 7.5v5.5M12 16.2h.01" stroke="#F4B223" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-        <div>
-          <p>O botão não abriu o WhatsApp? Copie o link e cole no navegador.</p>
-          <button type="button" class="btn-copy" data-grupo-copiar>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="9" y="9" width="11" height="11" rx="2.5" stroke="currentColor" stroke-width="2"/>
-              <path d="M15 5.5A2.5 2.5 0 0 0 12.5 3H6a2 2 0 0 0-2 2v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <span data-rotulo aria-live="polite">Copiar link do grupo</span>
-          </button>
-        </div>
-      </div>
-
-    </section>
-  </div>
-</main>
-
-<footer class="site-footer">
-  <div class="wrap">
-    <p>© <span id="ano">2026</span> Paraguai Academy — Mentoria de Importação</p>
-    <a href="politica-privacidade.html">Política de Privacidade</a>
-  </div>
-</footer>
-
-<!-- Botão fixo no rodapé — aparece só no celular (CSS: .cta-fixa) -->
-<div class="cta-fixa">
-  <a class="btn btn-whats" data-grupo-link
+  <!-- 5. Botão
+       O href é reserva: o valor real vem da constante LINK_DO_GRUPO em
+       assets/grupo.js, que também dispara ClicouGrupoVIP no clique. Sem
+       target="_blank" de propósito — na mesma aba funciona melhor no
+       navegador interno do Instagram e do Facebook. -->
+  <a class="botao" data-grupo-link
      href="https://chat.whatsapp.com/CktozyU7vE9EQXjSPAumUV" rel="noopener">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M12.04 2C6.6 2 2.18 6.42 2.18 11.86c0 1.9.53 3.68 1.46 5.2L2 22l5.08-1.59a9.8 9.8 0 0 0 4.96 1.33h.01c5.44 0 9.86-4.42 9.86-9.86S17.48 2 12.04 2Zm0 18.02c-1.56 0-3.08-.42-4.4-1.2l-.32-.19-3.02.95.96-2.94-.2-.33a8.14 8.14 0 0 1-1.25-4.35c0-4.52 3.68-8.2 8.2-8.2 4.53 0 8.2 3.68 8.2 8.2s-3.67 8.06-8.17 8.06Zm4.5-6.03c-.25-.12-1.46-.72-1.69-.8-.22-.09-.39-.12-.55.12-.17.25-.63.8-.78.97-.14.16-.28.18-.53.06-.24-.12-1.04-.38-1.98-1.22-.73-.65-1.22-1.46-1.37-1.7-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.3-.22.25-.86.84-.86 2.05s.88 2.38 1 2.54c.12.17 1.73 2.63 4.19 3.69.58.25 1.04.4 1.4.52.59.18 1.12.16 1.55.1.47-.07 1.46-.6 1.66-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.17-.47-.29Z"/>
     </svg>
-    QUERO ENTRAR NO GRUPO
+    Entrar no grupo WhatsApp
   </a>
-</div>
+
+  <p class="categorias">Perfumes, eletrônicos, relógios, celulares e muito mais.</p>
+
+</main>
+
+<!-- 6. Rodapé -->
+<footer class="rodape">
+  <p>Valores de exemplo. Resultados variam.</p>
+  <p>Direitos Reservados © <span id="ano">2026</span></p>
+</footer>
 
 <script src="assets/grupo.js" defer></script>
-<script src="assets/obrigado.js" defer></script>
 </body>
 </html>

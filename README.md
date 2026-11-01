@@ -15,7 +15,8 @@ ParaguaiAcademy/
 │   ├── form.js                 Máscara, validação, UTMs e envio
 │   ├── grupo.js                Link do Grupo VIP + copiar link + ClicouGrupoVIP
 │   ├── cadastro-concluido.js   Personalização com o primeiro nome
-│   └── obrigado.js             Contador da prova social
+│   ├── iphone.jpg              Foto do topo de obrigado.html (250x250 no mínimo)
+│   └── obrigado.js             Sem uso — obrigado.html virou página de tela única
 └── apps-script/
     └── Codigo.gs               Recebedor dos leads na planilha
 ```
@@ -249,7 +250,7 @@ O CSS da classe `.cover-img` já aplica os mesmos cantos, sombra e inclinação.
 | O que | Onde |
 |---|---|
 | **Link do Grupo VIP** | `assets/grupo.js`, constante `LINK_DO_GRUPO` — vale para as duas páginas do grupo |
-| Nº de pessoas na prova social | `assets/obrigado.js`, constante `PESSOAS_NO_GRUPO` |
+| Foto do topo de `obrigado.html` | troque o arquivo `assets/iphone.jpg` (quadrado, 500x500 ou mais) |
 | Preenchimento da barra de progresso | `cadastro-concluido.html`, `.progresso-barra` (mude o `width` e o `aria-valuenow` juntos) |
 | Nome da empresa no rodapé | elemento `.site-footer` em cada HTML |
 | E-mail de contato da LGPD | `politica-privacidade.html`, seção 8 |
