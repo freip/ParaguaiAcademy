@@ -78,6 +78,7 @@ a{color:inherit;}
 }
 
 .gold{color:var(--gold-500);}
+.green{color:var(--green-600);}   /* só sobre fundo branco: contraste AA */
 .sr-only{
   position:absolute;width:1px;height:1px;padding:0;margin:-1px;
   overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
@@ -658,6 +659,222 @@ a{color:inherit;}
 }
 
 /* --------------------------------------------------------------------------
+   Barra de progresso (cadastro-concluido.html)
+   O preenchimento vem do width inline no HTML, junto do aria-valuenow.
+   -------------------------------------------------------------------------- */
+.progresso{
+  text-align:left;
+  margin-bottom:20px;
+}
+.progresso-etapa{
+  display:block;
+  font-family:'Poppins',sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  color:var(--green-600);
+  margin-bottom:8px;
+}
+.progresso-trilha{
+  height:10px;
+  border-radius:var(--r-pill);
+  background:#E6EDF7;
+  overflow:hidden;
+}
+.progresso-barra{
+  height:100%;
+  border-radius:var(--r-pill);
+  background:linear-gradient(90deg,var(--green-700) 0%,var(--green-600) 100%);
+}
+
+/* --------------------------------------------------------------------------
+   Botão de copiar o link do grupo — usado sobre o fundo azul,
+   dentro de .thanks-alert
+   -------------------------------------------------------------------------- */
+.btn-copy{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:12px;
+  min-height:44px;
+  padding:10px 18px;
+  font-family:'Poppins',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.2;
+  color:#fff;
+  background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.38);
+  border-radius:var(--r-pill);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .15s, border-color .15s;
+}
+.btn-copy:hover{background:rgba(255,255,255,.14);}
+.btn-copy:focus-visible{outline:3px solid var(--gold-500);outline-offset:3px;}
+.btn-copy.is-copiado{
+  background:var(--green-600);
+  border-color:var(--green-600);
+}
+
+/* --------------------------------------------------------------------------
+   Botão fixo no rodapé da tela — só no celular
+   -------------------------------------------------------------------------- */
+.cta-fixa{
+  display:none;
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:30;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));
+  background:rgba(7,30,69,.94);
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.cta-fixa .btn{
+  width:100%;
+  min-height:52px;
+  font-size:17px;
+  box-shadow:none;
+}
+
+/* --------------------------------------------------------------------------
+   obrigado.html — entrada no Grupo VIP (tráfego frio)
+   -------------------------------------------------------------------------- */
+.vip-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(244,178,35,.16);
+  border:1px solid rgba(244,178,35,.45);
+  color:#8A5B00;
+  font-family:'Poppins',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  line-height:1.3;
+  padding:7px 14px;
+  border-radius:var(--r-pill);
+  margin-bottom:16px;
+}
+.vip-card h1{font-size:28px;margin-bottom:12px;}
+.vip-sub{
+  font-size:16px;
+  color:var(--muted);
+  margin-bottom:22px;
+}
+.vip-sub strong{color:var(--navy-800);font-weight:700;}
+
+/* Prova social com avatares de iniciais */
+.prova{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--border);
+}
+.avatars{display:flex;flex:none;}
+.avatars span{
+  width:32px;height:32px;
+  margin-left:-9px;
+  border-radius:50%;
+  border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+  color:#fff;
+}
+.avatars span:first-child{margin-left:0;}
+.avatars span:nth-child(1){background:var(--navy-800);}
+.avatars span:nth-child(2){background:var(--green-600);}
+.avatars span:nth-child(3){background:var(--gold-500);color:var(--navy-800);}
+.avatars span:nth-child(4){background:var(--navy-700);}
+.prova-texto{
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+  text-align:left;
+}
+
+/* Bloco de seção sobre o fundo azul */
+.vip-bloco{
+  width:100%;
+  max-width:var(--formw);
+  margin:28px auto 0;
+}
+.vip-bloco h2{
+  font-size:22px;
+  text-align:center;
+  margin-bottom:14px;
+}
+
+/* Os 3 cards do que a pessoa recebe */
+.benefits{
+  display:grid;
+  gap:12px;
+}
+.benefit{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  text-align:left;
+  background:var(--surface);
+  color:var(--text);
+  border-radius:var(--r-card);
+  padding:16px 18px;
+  box-shadow:var(--shadow-md);
+}
+.benefit-icon{
+  flex:none;
+  width:44px;height:44px;
+  border-radius:var(--r-pill);
+  background:rgba(244,178,35,.18);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  line-height:1;
+}
+.benefit h3{
+  font-size:16px;
+  margin:0 0 2px;
+  color:var(--navy-800);
+}
+.benefit p{
+  font-size:14px;
+  line-height:1.5;
+  color:var(--muted);
+  margin:0;
+}
+
+/* Faixa do presente de boas-vindas */
+.gift-band{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  text-align:left;
+  width:100%;
+  max-width:var(--formw);
+  margin:20px auto 0;
+  padding:16px 18px;
+  border:2px solid var(--gold-500);
+  border-radius:var(--r-card);
+  background:rgba(244,178,35,.10);
+}
+.gift-band > span{
+  flex:none;
+  font-size:22px;
+  line-height:1.2;
+}
+.gift-band p{
+  font-size:14px;
+  color:#F0F4FA;
+  margin:0;
+}
+.gift-band strong{color:var(--gold-500);}
+
+/* --------------------------------------------------------------------------
    Página de download — um botão só, centralizada na tela
    -------------------------------------------------------------------------- */
 .solo{
@@ -717,6 +934,15 @@ a{color:inherit;}
 .doc a{color:var(--navy-800);}
 
 /* ==========================================================================
+   ≤767px — botão fixo no rodapé da tela (só celular)
+   O padding no body abre espaço para ele não cobrir o rodapé.
+   ========================================================================== */
+@media (max-width:767px){
+  .cta-fixa{display:block;}
+  body.tem-cta-fixa{padding-bottom:88px;}
+}
+
+/* ==========================================================================
    ≥480px — chips em duas colunas
    ========================================================================== */
 @media (min-width:480px){
@@ -771,6 +997,15 @@ a{color:inherit;}
   .steps{grid-template-columns:repeat(3,1fr);max-width:860px;}
   .step{flex-direction:column;align-items:flex-start;gap:10px;}
   .thanks-alert{max-width:680px;}
+
+  .vip-badge{font-size:14px;}
+  .vip-card h1{font-size:34px;}
+  .vip-sub{font-size:18px;}
+  .vip-bloco{max-width:860px;margin-top:36px;}
+  .vip-bloco h2{font-size:28px;margin-bottom:18px;}
+  .benefits{grid-template-columns:repeat(3,1fr);}
+  .benefit{flex-direction:column;}
+  .gift-band{max-width:680px;}
 
   .solo-card{padding:48px 44px;max-width:620px;}
   .solo-card h1{font-size:34px;}

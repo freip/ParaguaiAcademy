@@ -32,8 +32,11 @@
     // Nome do conteúdo reportado ao Meta no evento Lead.
     CONTENT_NAME: 'Guia Paraguai',
 
-    // Página de obrigado
-    PAGINA_OBRIGADO: 'obrigado.html'
+    // Página de fim do formulário.
+    // NÃO aponte para obrigado.html: aquela página virou destino de anúncio
+    // para quem NÃO preencheu o formulário (tráfego frio), e não dispara
+    // CompleteRegistration.
+    PAGINA_FINAL: 'cadastro-concluido.html'
   };
 
   /* ======================================================================
@@ -317,14 +320,14 @@
     return parte.charAt(0).toUpperCase() + parte.slice(1).toLowerCase();
   }
 
-  function montarUrlObrigado(nome) {
+  function montarUrlFinal(nome) {
     var params = new URLSearchParams();
     params.set('nome', nome);
     UTM_KEYS.forEach(function (key) {
       var valor = $(key) ? $(key).value : '';
       if (valor) { params.set(key, valor); }
     });
-    return CONFIG.PAGINA_OBRIGADO + '?' + params.toString();
+    return CONFIG.PAGINA_FINAL + '?' + params.toString();
   }
 
   function enviarParaPlanilha(dados) {
@@ -471,7 +474,7 @@
     };
     if (CONFIG.SEGREDO) { dados.secret = CONFIG.SEGREDO; }
 
-    var destino = montarUrlObrigado(primeiroNome(nome));
+    var destino = montarUrlFinal(primeiroNome(nome));
 
     enviarParaPlanilha(dados)
       .then(function () {

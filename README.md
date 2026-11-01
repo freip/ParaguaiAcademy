@@ -1,20 +1,41 @@
-# Paraguai Academy — Landing de captura + Página de obrigado
+# Paraguai Academy — Landing de captura + Grupo VIP
 
 HTML, CSS e JavaScript puros. Sem framework, sem build, sem dependência externa
 além das fontes do Google.
 
 ```
 ParaguaiAcademy/
-├── index.html                  Página 1 — captura
-├── obrigado.html               Página 2 — obrigado
+├── index.html                  Captura — formulário que grava na planilha
+├── cadastro-concluido.html     Fim do formulário — "falta 1 passo: entre no grupo"
+├── obrigado.html               Entrada no grupo para tráfego frio (destino dos anúncios)
+├── baixar.html                 Download direto do PDF
 ├── politica-privacidade.html   Modelo de política (revise com seu jurídico)
 ├── assets/
 │   ├── style.css               Identidade visual extraída do PDF
 │   ├── form.js                 Máscara, validação, UTMs e envio
-│   └── obrigado.js             Personalização com o primeiro nome
+│   ├── grupo.js                Link do Grupo VIP + copiar link + ClicouGrupoVIP
+│   ├── cadastro-concluido.js   Personalização com o primeiro nome
+│   └── obrigado.js             Contador da prova social
 └── apps-script/
     └── Codigo.gs               Recebedor dos leads na planilha
 ```
+
+## As duas páginas do grupo
+
+São duas porque o público é diferente — e os eventos do Pixel também:
+
+| Página | Quem chega | Eventos |
+|---|---|---|
+| `cadastro-concluido.html` | quem **acabou de preencher** o formulário | `PageView` + `CompleteRegistration` |
+| `obrigado.html` | quem vem **direto do anúncio**, sem formulário | `PageView` + `ViewContent` |
+
+`obrigado.html` manteve a URL antiga porque os anúncios apontam para ela. Ela
+**nunca** dispara `Lead` nem `CompleteRegistration`: essas pessoas não se
+cadastraram, e um lead falso ali estragaria a otimização da campanha.
+
+O link do grupo fica em **uma única constante**: `LINK_DO_GRUPO`, no começo de
+`assets/grupo.js`. Os `href` escritos no HTML são apenas reserva para o caso de
+o JavaScript não carregar — o valor real vem sempre da constante.
 
 ---
 
@@ -78,7 +99,7 @@ var CONFIG = {
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfy..../exec',
   EVENTO: 'lead-paraguai',   // não apague: é o que separa a aba
   SEGREDO: '',               // só se você usa SHARED_SECRET
-  PAGINA_OBRIGADO: 'obrigado.html'
+  PAGINA_FINAL: 'cadastro-concluido.html'   // não troque para obrigado.html
 };
 ```
 
@@ -90,8 +111,8 @@ var CONFIG = {
 
 ## 2. Rastreamento do Meta
 
-Pixel **`1888863052133186`**, já ativo nas quatro páginas (`index`,
-`obrigado`, `baixar`, `politica-privacidade`).
+Pixel **`1888863052133186`**, já ativo nas cinco páginas (`index`,
+`cadastro-concluido`, `obrigado`, `baixar`, `politica-privacidade`).
 
 ### 2.1 Quando cada evento dispara
 
@@ -99,8 +120,13 @@ Pixel **`1888863052133186`**, já ativo nas quatro páginas (`index`,
 |---|---|---|
 | `PageView` | todas as páginas | ao carregar |
 | **`Lead`** | `assets/form.js` | **só depois** do Apps Script confirmar o envio |
-| `ClicouGrupoVIP` | `assets/obrigado.js` | clique no botão do Grupo VIP |
+| `CompleteRegistration` | `cadastro-concluido.html` | ao carregar o fim do formulário |
+| `ViewContent` | `obrigado.html` | ao carregar a página de tráfego frio |
+| `ClicouGrupoVIP` | `assets/grupo.js` | clique em qualquer botão do grupo ou em "Copiar link" |
 | `BaixouPDF` | `baixar.html` | clique no botão de download |
+
+O `Lead` dispara **uma vez por cadastro**, na página de captura — não nas
+páginas do grupo. É o evento que a campanha de Leads usa para otimizar.
 
 O `Lead` **não** dispara no clique do botão nem quando o envio falha. A ordem
 no `form.js` é: envia → confirma → dispara o `Lead` → espera 300 ms → só então
@@ -222,11 +248,13 @@ O CSS da classe `.cover-img` já aplica os mesmos cantos, sombra e inclinação.
 
 | O que | Onde |
 |---|---|
-| Link do Grupo VIP | `assets/obrigado.js`, variável `LINK_DO_GRUPO` (já está com o seu link) |
-| Nome da empresa no rodapé | `index.html` e `obrigado.html`, elemento `.site-footer` |
+| **Link do Grupo VIP** | `assets/grupo.js`, constante `LINK_DO_GRUPO` — vale para as duas páginas do grupo |
+| Nº de pessoas na prova social | `assets/obrigado.js`, constante `PESSOAS_NO_GRUPO` |
+| Preenchimento da barra de progresso | `cadastro-concluido.html`, `.progresso-barra` (mude o `width` e o `aria-valuenow` juntos) |
+| Nome da empresa no rodapé | elemento `.site-footer` em cada HTML |
 | E-mail de contato da LGPD | `politica-privacidade.html`, seção 8 |
 | Texto do botão principal | `index.html`, `#submit-btn` |
-| Cor do botão da página de obrigado | `assets/style.css`, classe `.btn-whats` (troque para `.btn-primary` no HTML se quiser azul) |
+| Cor dos botões do grupo | `assets/style.css`, classe `.btn-whats` (troque para `.btn-primary` no HTML se quiser azul) |
 
 ---
 
@@ -260,11 +288,17 @@ Qualquer hospedagem de arquivos estáticos serve. As três mais rápidas:
 - [ ] `Codigo.gs` atualizado no Apps Script e **republicado por Gerenciar
       implantações** (URL inalterada)
 - [ ] Um envio de teste nos **sites antigos** ainda caindo na primeira aba
-- [ ] `[PIXEL_ID]` trocado nos dois HTMLs
+- [ ] `[PIXEL_ID]` trocado em todos os HTMLs
 - [ ] Envio de teste pelo celular → linha aparece na planilha → redireciona para
-      `obrigado.html?nome=...` com o nome certo no título
-- [ ] Botão do grupo abre o WhatsApp no celular
-- [ ] Testado em 360px de largura (DevTools → Galaxy S8+ ou largura 360)
+      `cadastro-concluido.html?nome=...` com o nome certo na frase de apoio
+- [ ] No Meta Pixel Helper: `Lead` **uma vez** por cadastro, e
+      `CompleteRegistration` em `cadastro-concluido.html`
+- [ ] `obrigado.html` aberta direto mostra só `PageView` + `ViewContent`
+      (nenhum `Lead`)
+- [ ] Botão do grupo abre o WhatsApp no celular e dispara `ClicouGrupoVIP`
+- [ ] "Copiar link do grupo" mostra "Link copiado!" e cola o link certo
+- [ ] Testado em 360px de largura (DevTools → Galaxy S8+ ou largura 360), com o
+      botão fixo do rodapé sem cobrir a Política de Privacidade
 - [ ] E-mail de contato trocado na política de privacidade
 - [ ] Linha de teste apagada da planilha
 
