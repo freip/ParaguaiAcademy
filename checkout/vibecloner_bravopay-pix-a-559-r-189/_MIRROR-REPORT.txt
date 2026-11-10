@@ -1,0 +1,15 @@
+VibeCloner — Relatório de Mirror
+==================================
+URL: https://www.bravopay.club/
+Capturado em: 2026-11-01T03:59:44.763Z
+
+Recursos detectados na página: 70
+Assets estáticos tentados: 66
+Baixados para o mirror: 66
+Falharam: 0
+
+Nenhuma falha registrada. 🎉
+
+Obs.: recursos que falharam mantêm a URL original no HTML (carregam
+da web quando o clone é servido com internet). Envie este arquivo
+para diagnóstico se algo estiver faltando.

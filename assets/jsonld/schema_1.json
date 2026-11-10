@@ -1,0 +1,66 @@
+{
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://connectacademy.com.br/#website",
+        "url": "https://connectacademy.com.br/",
+        "name": "Connect Academy",
+        "description": "Plataforma completa para importadores do Brasil: pesquise no Taobao, Weidian e 1688, declare compras, rastreie envios e baixe imagens da Yupoo.",
+        "inLanguage": "pt-BR",
+        "publisher": {
+          "@id": "https://connectacademy.com.br/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://connectacademy.com.br/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://connectacademy.com.br/#organization",
+        "name": "Connect Academy",
+        "url": "https://connectacademy.com.br/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://i.postimg.cc/RCpY6w6k/CONNECTFIVE.webp"
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://connectacademy.com.br/#app",
+        "name": "Connect Academy",
+        "url": "https://connectacademy.com.br/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web, iOS, Android",
+        "description": "Plataforma completa para importadores: pesquise no Taobao, Weidian e 1688, declare compras, rastreie envios, baixe imagens da Yupoo.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "BRL"
+        },
+        "featureList": [
+          "Pesquise produtos no Taobao, Weidian e 1688",
+          "Assistente de declaração de importação",
+          "Baixe imagens da Yupoo em massa",
+          "Rastreio de envio internacional",
+          "Criar conta grátis"
+        ]
+      },
+      {
+        "@type": "SiteLinksSearchBox",
+        "url": "https://connectacademy.com.br/",
+        "potentialAction": [
+          {
+            "@type": "SearchAction",
+            "target": "https://connectacademy.com.br/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        ]
+      }
+    ]
+  }

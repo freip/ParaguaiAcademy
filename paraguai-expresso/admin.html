@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Painel do Admin | Paraguai Academy</title>
+<style>
+:root{color-scheme:dark;--bg:#000;--panel:#0b0b0f;--line:#1c1c24;--ink:#f4f4f7;--mute:#8a8a99;--navy:#4f46ff;--ok:#22c55e;--err:#ffb6bd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,"DM Sans",sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:28px;margin:0 0 4px}h2{font-size:20px;margin:0 0 14px}.sub{color:var(--mute);margin:0 0 24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:20px}
+label{display:block;font-weight:700;font-size:14px;margin:0 0 6px}.f{margin-bottom:14px}
+input,select{width:100%;background:#16161d;border:1px solid #333;color:var(--ink);border-radius:10px;padding:12px 14px;font:inherit}
+input:focus,select:focus{outline:2px solid var(--navy);border-color:transparent}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:640px){.row{grid-template-columns:1fr}}
+button{border:0;border-radius:10px;padding:12px 18px;background:var(--navy);color:#fff;font:700 15px system-ui,sans-serif;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}button.g{background:#1c1c24;color:var(--ink)}button.s{padding:7px 11px;font-size:13px}button.d{background:#3a1519;color:#ffb6bd}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.msg{min-height:22px;margin:10px 0 0;font-size:14px}.msg.e{color:var(--err)}.msg.o{color:var(--ok)}
+.mod{margin-top:22px}.mod h3{margin:0 0 8px;font-size:17px}.mod small{color:var(--mute);font-weight:400}
+.it{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.it .t{flex:1;min-width:0}.it .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .t span{color:var(--mute);font-size:13px}
+.vazio{color:var(--mute);font-size:14px;padding:6px 0}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="login" class="card" style="max-width:420px;margin:60px auto">
+    <h1>Painel do Admin</h1><p class="sub">Paraguai Academy · acesso restrito.</p>
+    <form id="fl">
+      <div class="f"><label for="em">E-mail</label><input id="em" type="email" autocomplete="username" required></div>
+      <div class="f"><label for="pw">Senha</label><input id="pw" type="password" autocomplete="current-password" required></div>
+      <button id="bl" type="submit" style="width:100%">Entrar</button>
+      <p class="msg e" id="ml" role="alert"></p>
+    </form>
+  </section>
+
+  <section id="painel" class="hide">
+    <div class="top"><div><h1>Painel do Admin</h1><p class="sub">O que você postar aqui aparece para os alunos em até 1 minuto, sem precisar publicar o site de novo.</p></div><button class="g s" id="sair">Sair</button></div>
+
+    <div class="card">
+      <h2>Postar nova aula</h2>
+      <form id="fa">
+        <div class="row">
+          <div class="f"><label for="mod">Grupo (módulo)</label><select id="mod"></select></div>
+          <div class="f"><label for="etapa">Etapa</label><select id="etapa"></select></div>
+        </div>
+        <div class="f"><label for="tit">Título da aula</label><input id="tit" maxlength="120" required placeholder="Ex.: Como escolher a loja"></div>
+        <div class="f"><label for="vid">Link do vídeo no YouTube</label><input id="vid" required placeholder="https://www.youtube.com/watch?v=..."><small style="color:var(--mute)">Dica: suba o vídeo como "Não listado" no YouTube e cole o link aqui.</small></div>
+        <button id="ba" type="submit">Publicar aula</button>
+        <p class="msg" id="ma" role="status"></p>
+      </form>
+    </div>
+
+    <div class="card"><h2>Aulas publicadas</h2><div id="lista"></div></div>
+  </section>
+</div>
+
+<script>
+const SB_URL="https://jflqyoshiwiiwrjsmmzv.supabase.co", SB_KEY="sb_publishable_7FztbSojia-aVtCGvsVglw_fmCadtSj"; // chave pública
+// Grupos do site (mesmos ids do index.html). Etapa = onde a aula entra dentro do módulo.
+const MODS=[
+  {id:"primeiros",n:"Primeiros Passos",steps:["Aulas"]},
+  {id:"forn-brasil",n:"Fornecedor Brasil",steps:["Aulas"]},
+  {id:"importar",n:"Como importar do Paraguai",steps:["Aulas"]},
+  {id:"forn-paraguai",n:"Fornecedor Paraguai",steps:["Aulas"]},
+  {id:"site-brasil",n:"Como comprar no site do Brasil",steps:["Aulas"]},
+  {id:"perfumes",n:"Como importar perfumes",steps:["Conhecer","Comprar","Receber","Vender"]},
+  {id:"eletronicos",n:"Como importar eletrônicos",steps:["Conhecer","Comprar","Receber","Vender"]}
+];
+const $=id=>document.getElementById(id);
+let sess=null, rows=[];
+const load=()=>{try{return JSON.parse(localStorage.adm)}catch{return null}};
+const store=s=>{try{s?localStorage.adm=JSON.stringify(s):localStorage.removeItem("adm")}catch{}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const msg=(el,t,k)=>{el.textContent=t||"";el.className="msg "+(k||"")};
+
+async function auth(grant,body){
+  const r=await fetch(`${SB_URL}/auth/v1/token?grant_type=${grant}`,{method:"POST",headers:{apikey:SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!r.ok) throw new Error(r.status===400||r.status===401?"E-mail ou senha incorretos.":"Login indisponível. Tente de novo.");
+  const t=await r.json();
+  return {access:t.access_token,refresh:t.refresh_token,exp:Date.now()+(t.expires_in||3600)*1000};
+}
+async function token(){
+  if(!sess) throw new Error("Sessão expirada.");
+  if(sess.exp-Date.now()<60000){
+    try{sess=await auth("refresh_token",{refresh_token:sess.refresh});store(sess)}
+    catch{sess=null;store(null);mostrar();throw new Error("Sessão expirada. Entre de novo.")}
+  }
+  return sess.access;
+}
+async function api(path,opt={}){
+  const r=await fetch(`${SB_URL}/rest/v1/${path}`,{...opt,headers:{apikey:SB_KEY,Authorization:"Bearer "+await token(),"Content-Type":"application/json",Prefer:"return=representation",...opt.headers}});
+  if(!r.ok){
+    if(r.status===401||r.status===403) throw new Error("Sem permissão. Entre com a conta de administrador.");
+    if(r.status===404) throw new Error("A tabela de aulas ainda não existe. Rode o arquivo supabase/schema.sql no Supabase.");
+    throw new Error("Não foi possível salvar. Tente de novo.");
+  }
+  return r.status===204?null:r.json();
+}
+function ytId(v){
+  v=v.trim();
+  if(/^[\w-]{11}$/.test(v)) return v;
+  try{
+    const u=new URL(v), h=u.hostname.replace(/^www\.|^m\./,"");
+    let id=null;
+    if(h==="youtu.be") id=u.pathname.slice(1).split("/")[0];
+    else if(h==="youtube.com"||h==="youtube-nocookie.com"){
+      id=u.searchParams.get("v")||(u.pathname.match(/^\/(?:embed|shorts|live|v)\/([\w-]{11})/)||[])[1];
+    }
+    return /^[\w-]{11}$/.test(id||"")?id:null;
+  }catch{return null}
+}
+
+function mostrar(){
+  const on=!!sess;
+  $("login").classList.toggle("hide",on);$("painel").classList.toggle("hide",!on);
+  if(on) refresh();
+}
+async function refresh(){
+  try{rows=await api("lessons?select=*&order=position.asc,created_at.asc")}catch(e){msg($("ma"),e.message,"e");rows=[]}
+  desenhar();
+}
+function desenhar(){
+  $("lista").innerHTML=MODS.map(m=>{
+    const its=rows.filter(r=>r.module_id===m.id);
+    return `<div class="mod"><h3>${esc(m.n)} <small>· ${its.length} aula(s) postada(s)</small></h3>`+
+      (its.length?its.map((r,i)=>`<div class="it"><div class="t"><b>${esc(r.title)}</b><span>Etapa: ${esc(m.steps[Math.min(r.step,m.steps.length-1)]||"")} · youtu.be/${esc(r.video)}</span></div>
+        <button class="g s" data-a="up" data-id="${esc(r.id)}" ${i===0?"disabled":""} title="Subir">↑</button>
+        <button class="g s" data-a="down" data-id="${esc(r.id)}" ${i===its.length-1?"disabled":""} title="Descer">↓</button>
+        <button class="g s" data-a="edit" data-id="${esc(r.id)}">Editar</button>
+        <button class="d s" data-a="del" data-id="${esc(r.id)}">Apagar</button></div>`).join(""):`<div class="vazio">Nenhuma aula postada neste grupo.</div>`)+`</div>`;
+  }).join("");
+}
+function etapas(){
+  const m=MODS.find(x=>x.id===$("mod").value);
+  $("etapa").innerHTML=m.steps.map((t,i)=>`<option value="${i}">${esc(t)}</option>`).join("");
+  $("etapa").parentElement.classList.toggle("hide",m.steps.length<2);
+}
+$("mod").innerHTML=MODS.map(m=>`<option value="${m.id}">${esc(m.n)}</option>`).join("");
+$("mod").onchange=etapas;etapas();
+
+$("fl").onsubmit=async e=>{
+  e.preventDefault();msg($("ml"));$("bl").disabled=true;$("bl").textContent="Entrando…";
+  try{sess=await auth("password",{email:$("em").value.trim().toLowerCase(),password:$("pw").value});store(sess);$("pw").value="";mostrar()}
+  catch(er){msg($("ml"),er.message,"e")}
+  $("bl").disabled=false;$("bl").textContent="Entrar";
+};
+$("sair").onclick=()=>{sess=null;store(null);rows=[];mostrar()};
+
+$("fa").onsubmit=async e=>{
+  e.preventDefault();msg($("ma"));
+  const video=ytId($("vid").value);
+  if(!video) return msg($("ma"),"Link do YouTube inválido. Cole o endereço do vídeo.","e");
+  const mod=$("mod").value, pos=Math.max(0,...rows.filter(r=>r.module_id===mod).map(r=>r.position))+1;
+  $("ba").disabled=true;$("ba").textContent="Publicando…";
+  try{
+    await api("lessons",{method:"POST",body:JSON.stringify({module_id:mod,step:+$("etapa").value||0,title:$("tit").value.trim(),video,position:pos})});
+    $("tit").value="";$("vid").value="";msg($("ma"),"Aula publicada! Os alunos já podem ver.","o");await refresh();
+  }catch(er){msg($("ma"),er.message,"e")}
+  $("ba").disabled=false;$("ba").textContent="Publicar aula";
+};
+
+$("lista").onclick=async e=>{
+  const b=e.target.closest("button[data-a]");if(!b)return;
+  const r=rows.find(x=>x.id===b.dataset.id);if(!r)return;
+  const url="lessons?id=eq."+encodeURIComponent(r.id);
+  try{
+    if(b.dataset.a==="del"){
+      if(!confirm(`Apagar a aula "${r.title}"? Os alunos deixam de vê-la.`))return;
+      await api(url,{method:"DELETE"});
+    }else if(b.dataset.a==="edit"){
+      const t=prompt("Título da aula:",r.title);if(t===null)return;
+      const l=prompt("Link do YouTube:","https://youtu.be/"+r.video);if(l===null)return;
+      const video=ytId(l);if(!t.trim()||!video)return msg($("ma"),"Título ou link inválido.","e");
+      await api(url,{method:"PATCH",body:JSON.stringify({title:t.trim(),video})});
+    }else{
+      const its=rows.filter(x=>x.module_id===r.module_id), i=its.indexOf(r), o=its[i+(b.dataset.a==="up"?-1:1)];if(!o)return;
+      // renumera pela ordem atual (posições podem repetir) e troca as duas vizinhas
+      its.forEach((x,n)=>x.position=n+1);
+      const a=r.position, c=o.position;
+      await Promise.all(its.map(x=>api("lessons?id=eq."+encodeURIComponent(x.id),{method:"PATCH",body:JSON.stringify({position:x===r?c:x===o?a:x.position})})));
+    }
+    msg($("ma"));await refresh();
+  }catch(er){msg($("ma"),er.message,"e")}
+};
+
+sess=load();mostrar();
+</script>
+</body>
+</html>

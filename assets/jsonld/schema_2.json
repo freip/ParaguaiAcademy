@@ -1,0 +1,38 @@
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Como pesquisar produtos no Taobao, Weidian e 1688?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Na Connect Academy você pode pesquisar produtos por palavra-chave ou imagem diretamente no Taobao, Weidian e 1688, tudo em um único lugar. Crie sua conta grátis em connectacademy.com.br."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como baixar imagens da Yupoo em massa?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A Connect Academy oferece uma ferramenta para baixar imagens de álbuns da Yupoo em massa com poucos cliques. Acesse connectacademy.com.br e crie sua conta grátis."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como declarar produtos importados da China?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "O Assistente de Declaração da Connect Academy ajuda você a preencher corretamente a declaração de importação de produtos comprados na China. Disponível em connectacademy.com.br."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como rastrear meu envio da China?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Use o Rastreio de Envio da Connect Academy para acompanhar seu pacote desde a China até o Brasil em tempo real. Acesse connectacademy.com.br."
+        }
+      }
+    ]
+  }
