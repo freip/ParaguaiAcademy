@@ -17,6 +17,9 @@ import * as freteiros from "./tools/freteiros.js";
 import * as envio from "./tools/envio.js";
 import * as calculadora from "./tools/calculadora.js";
 import * as lojaParceira from "./pages/lojaParceira.js";
+import * as inicio from "./pages/inicio.js";
+import * as suporte from "./pages/suporte.js";
+import * as certificado from "./pages/certificado.js";
 
 // Rotas de ferramenta: [chave da ferramenta, módulo, nome].
 const FERRAMENTAS_ROTA = {
@@ -104,8 +107,11 @@ function render() {
     const view = document.getElementById("view");
     const seg = (location.hash.slice(1) || "/app").split("/"); // ["","app","trilha","3"]
     window.scrollTo(0, 0);
+    if (base === "#/app") { inicio.montar(ctx, app, view); return; }
     if (base === "#/app/trilha" && seg[3]) { etapa.montar(ctx, app, view, seg[3]); return; }
     if (base === "#/app/trilha") { trilha.montar(ctx, app, view); return; }
+    if (base === "#/app/suporte") { suporte.montar(ctx, app, view); return; }
+    if (base === "#/app/certificado") { certificado.montar(ctx, app, view); return; }
     if (FERRAMENTAS_ROTA[base]) {
       const [chave, mod, nome] = FERRAMENTAS_ROTA[base];
       if (!ferramentaLiberada(ctx, ETAPA_DA_FERRAMENTA[chave])) {
