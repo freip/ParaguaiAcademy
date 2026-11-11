@@ -1,8 +1,10 @@
 // Tela de login (número + senha).
 import { entrar } from "../auth.js";
+import { logoHTML } from "../lib/logo.js";
 
 export function render() {
   return `<div class="auth-wrap"><div class="card auth-card">
+    <div class="auth-logo">${logoHTML({ grande: true })}</div>
     <h1>Entrar</h1>
     <p class="sub">Acesse a área do aluno com seu número e senha.</p>
     <form id="form-login" novalidate>

@@ -1,10 +1,13 @@
 // Navegação da área do aluno: barra lateral (desktop), barra de topo e
 // menu inferior (celular). Os itens seguem a ordem da seção 3.1.
 import { ic } from "./lib/icons.js";
+import { logoHTML } from "./lib/logo.js";
 import { GRUPO_COMUNIDADE, ETAPA_DA_FERRAMENTA, NOME_PADRAO, TOTAL_ETAPAS } from "./config.js";
 import {
   ferramentaLiberada, trilhaConcluida, etapaAtual, nomeNicho,
 } from "./auth.js";
+
+const iniciais = (nome) => (nome || "").trim().split(/\s+/).slice(0, 2).map((p) => p[0] || "").join("").toUpperCase() || "AL";
 
 const PRINCIPAIS = [
   { id: "inicio", rota: "#/app",        nome: "Início",  icone: "home" },
@@ -49,31 +52,31 @@ function blocoPerfil(ctx) {
   const nome = ctx?.perfil?.nome || NOME_PADRAO;
   const chips = (ctx?.nichos || []).map((s) => `<span class="nicho-chip">${nomeNicho(ctx, s)}</span>`).join("");
   return `<div class="profile">
-    <div class="avatar">${ic("user", 40)}</div>
-    <span class="nome">${nome}</span>
-    <div class="nichos">${chips || '<span class="muted" style="font-size:12px">Sem nicho liberado</span>'}</div>
+    <div class="avatar">${iniciais(ctx?.perfil?.nome)}</div>
+    <div class="profile-info"><b class="nome">${nome}</b>
+      <div class="nichos">${chips || '<span class="muted" style="font-size:12px">Sem nicho</span>'}</div></div>
   </div>`;
 }
 
 function sidebar(ctx) {
-  return `<div class="brand">
-      <a class="logo" href="#/app">PARAGUAI <span>ACADEMY</span></a>
-      <span class="lang">BR ${ic("down", 12)}</span>
-    </div>
+  return `<a class="brand" href="#/app">${logoHTML()}</a>
     ${blocoPerfil(ctx)}
-    ${PRINCIPAIS.map((i) => itemLink(i, ctx)).join("")}
-    <div class="nav-group-label">Ferramentas</div>
-    ${FERRAMENTAS.map((i) => itemLink(i, ctx)).join("")}
-    <div class="nav-group-label">Mais</div>
-    ${OUTROS.map((i) => itemLink(i, ctx)).join("")}`;
+    <nav class="side-nav">
+      ${PRINCIPAIS.map((i) => itemLink(i, ctx)).join("")}
+      <div class="nav-group-label">Ferramentas</div>
+      ${FERRAMENTAS.map((i) => itemLink(i, ctx)).join("")}
+      <div class="nav-group-label">Mais</div>
+      ${OUTROS.map((i) => itemLink(i, ctx)).join("")}
+    </nav>
+    <a class="btn-comunidade" href="${GRUPO_COMUNIDADE}" target="_blank" rel="noopener">Comunidade de importados</a>`;
 }
 
 function topbar(ctx) {
   const nome = ctx?.perfil?.nome || NOME_PADRAO;
-  return `<a class="logo" href="#/app">PARAGUAI <span>ACADEMY</span></a>
+  return `<a class="brand" href="#/app">${logoHTML()}</a>
     <span class="sp"></span>
-    <button class="notif" aria-label="Notificações">${ic("bell", 16)}</button>
-    <div class="avatar" style="width:34px;height:34px" title="${nome}">${ic("user", 20)}</div>`;
+    <button class="notif" aria-label="Notificações">${ic("bell", 18)}</button>
+    <div class="avatar sm" title="${nome}">${iniciais(ctx?.perfil?.nome)}</div>`;
 }
 
 function bottomnav(ctx) {

@@ -26,7 +26,7 @@ export async function montar(ctx, app, view) {
       <p class="muted mt-2">Tire dúvidas sobre o curso, fornecedores e envios. Respondemos em horário comercial.</p>
       ${suporte ? `<a class="btn ok mt-3" target="_blank" rel="noopener"
         href="https://wa.me/${suporte}?text=${encodeURIComponent("Olá! Preciso de ajuda com a Paraguai Academy.")}">${ic("send", 15)} Falar no WhatsApp</a>`
-        : '<p class="aviso mt-2">Configure o WhatsApp do suporte no admin.</p>'}</div>
+        : ""}</div>
 
     <div class="card mt-4"><h2>Comunidade</h2>
       <p class="muted mt-2">Troque experiências com outros alunos.</p>

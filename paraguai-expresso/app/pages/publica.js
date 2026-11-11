@@ -4,6 +4,7 @@
 import { ETAPAS } from "../content/trilha.js";
 import { esc, brl } from "../lib/format.js";
 import { ic } from "../lib/icons.js";
+import { logoHTML } from "../lib/logo.js";
 import { restPublico } from "../lib/supabase.js";
 import { mapaConfig } from "../lib/dados.js";
 import * as VideoSlot from "../components/VideoSlot.js";
@@ -49,22 +50,27 @@ export async function montar(container) {
   container.innerHTML = `
     <div class="pub-wrap">
       <header class="pub-top">
-        <strong class="logo">PARAGUAI <span>ACADEMY</span></strong>
-        <a class="btn plain sm" href="#/entrar">Entrar</a>
+        <a class="brand" href="#/aula-gratis">${logoHTML({ grande: true })}</a>
+        <a class="btn ghost sm" href="#/entrar">Entrar</a>
       </header>
 
       <section class="pub-hero">
-        <h1>Aprenda a importar do Paraguai do jeito certo</h1>
+        <div class="pub-badge-wrap"><span class="pub-badge">Comunidade de importados</span></div>
+        <h1>Aprenda a importar do Paraguai <span class="amarelo">do jeito certo</span></h1>
         <p class="sub">Fornecedores de confiança, travessia, nota fiscal e envio, tudo em 8 etapas curtas.</p>
-        <div class="videos mt-4">${VideoSlot.html(v0, { semAssistir: true })}</div>
+        <div class="pub-video mt-4"><span class="pill-gratis">Aula grátis</span>
+          ${VideoSlot.html(v0, { semAssistir: true })}</div>
         ${cta(`Quero acessar o curso por ${preco}`)}
-        <p class="muted mt-2" style="font-size:13px;text-align:center">Pagamento único, acesso para sempre, com um nicho incluso.</p>
+        <p class="pub-selos mt-2">
+          <span>${ic("check", 14)} Pagamento único</span>
+          <span>${ic("check", 14)} Acesso para sempre</span>
+          <span>${ic("check", 14)} 1 nicho incluso</span></p>
       </section>
 
-      <section class="mt-5"><h2>O que você vai aprender</h2>
+      <section class="mt-5"><h2>O que você vai <span class="amarelo">aprender</span></h2>
         <div class="aprender mt-3">${aprender}</div></section>
 
-      <section class="mt-5"><h2>Ferramentas incluídas</h2>
+      <section class="mt-5"><h2>Ferramentas <span class="amarelo">incluídas</span></h2>
         <div class="grid-cards mt-3">
           <div class="mini-card"><b>Calculadora de custos</b><span class="muted">Custo real e preço de venda.</span></div>
           <div class="mini-card"><b>Fornecedores verificados</b><span class="muted">Paraguai e Brasil.</span></div>

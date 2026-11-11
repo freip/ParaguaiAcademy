@@ -1,57 +1,56 @@
-/* Tokens de design — um lugar só para cores, raios, sombras e espaçamentos.
-   Identidade: fundo escuro, roxo/azul-violeta de destaque. Verde só para
-   status positivo; vermelho só para alerta real. */
+/* ================================================================
+   TEMA — todas as cores do app ficam aqui (arquivo único de tema).
+   Identidade: azul-marinho escuro, amarelo de destaque, verde só
+   para status positivo. Títulos brancos; textos em tons de azul claro.
+   ================================================================ */
 :root{
   color-scheme: dark;
 
   /* superfícies */
-  --bg:#000;
-  --panel:#0b0b0f;
-  --panel-2:#111118;
-  --line:#1c1c24;
-  --line-2:#2a2a38;
+  --bg:#0A1C4A;            /* fundo */
+  --sidebar:#071538;       /* barra lateral */
+  --panel:#0F2558;         /* cards */
+  --panel-2:#0c2050;       /* inputs / fundos internos */
+  --panel-3:#13306b;       /* hover / realce sutil */
+  --line:rgba(220,228,245,.10);   /* borda fina dos cards */
+  --line-2:rgba(220,228,245,.18);
 
   /* texto */
-  --ink:#f4f4f7;
-  --mute:#8a8a99;
+  --ink:#ffffff;           /* títulos (brancos) */
+  --text:#DCE4F5;          /* texto */
+  --mute:#B8C4DE;          /* texto secundário */
 
-  /* destaque (roxo/violeta) */
-  --accent:#4f46ff;
-  --accent-2:#7c3aed;
-  --accent-ink:#a5a0ff;
-  --accent-soft:#16163a;
+  /* destaque (amarelo) */
+  --accent:#F4B400;
+  --accent-2:#F4B400;
+  --accent-ink:#F4B400;    /* texto de destaque (ex.: "do jeito certo") */
+  --accent-soft:rgba(244,180,0,.14);
+  --on-accent:#0A1C4A;     /* texto azul sobre o amarelo */
 
   /* status */
-  --ok:#22c55e;
-  --ok-soft:#0f2a1c;
-  --warn:#f2c35a;
-  --warn-soft:#241d0a;
-  --err:#ffb6bd;
-  --err-soft:#3a1519;
+  --ok:#19A35A;            /* concluído / liberado / WhatsApp */
+  --ok-soft:rgba(25,163,90,.16);
+  --warn:#F4B400;
+  --warn-soft:rgba(244,180,0,.12);
+  --err:#ff6b6b;
+  --err-soft:rgba(255,107,107,.14);
 
   /* raios */
-  --r-sm:9px;
-  --r:14px;
-  --r-lg:20px;
-  --r-xl:24px;
-  --r-pill:999px;
+  --r-sm:10px; --r:14px; --r-lg:18px; --r-xl:24px; --r-pill:999px;
 
   /* sombras */
-  --shadow:0 0 24px rgba(79,70,255,.33);
-  --shadow-soft:0 8px 30px rgba(0,0,0,.45);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --shadow-soft:0 8px 30px rgba(0,0,0,.40);
+  --shadow-accent:0 10px 24px rgba(244,180,0,.25);
 
   /* espaçamentos */
-  --sp-1:6px;
-  --sp-2:10px;
-  --sp-3:16px;
-  --sp-4:22px;
-  --sp-5:32px;
+  --sp-1:6px; --sp-2:10px; --sp-3:16px; --sp-4:22px; --sp-5:32px;
 
   /* tipografia e toque */
-  --font:"DM Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --font:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   --touch:44px;
 
-  /* medidas de layout */
-  --sidebar-w:250px;
+  /* layout */
+  --sidebar-w:264px;
   --bottomnav-h:64px;
 }

@@ -18,6 +18,9 @@ export const ICONS = {
   more:"M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2 M19 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2 M5 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2",
   check:"M20 6L9 17l-5-5",
   logout:"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
+  play:"M7 5l12 7-12 7z",
+  clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20 M12 7v5l3 2",
+  arrow:"M5 12h14 M13 6l6 6-6 6",
 };
 
 // Monta o <svg> de um ícone pelo nome.
