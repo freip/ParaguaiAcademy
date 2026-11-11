@@ -1,0 +1,91 @@
+/* Componentes da trilha, etapa, vídeo, checklist e mensagens. */
+
+.btn.sm{min-height:auto;padding:8px 14px;font-size:14px;box-shadow:none}
+
+/* ---------- Trilha ---------- */
+.trilha{display:flex;flex-direction:column;gap:12px}
+.trilha-item{display:flex;align-items:center;gap:14px;padding:16px;
+  border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel)}
+.trilha-item.atual{border-color:var(--accent);box-shadow:var(--shadow)}
+.trilha-item.bloq,.trilha-item.na{opacity:.6}
+.trilha-dot{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  font-weight:700;background:var(--panel-2);color:var(--mute)}
+.trilha-dot.ok{background:var(--ok);color:#fff}
+.trilha-dot.atual{background:var(--accent);color:#fff}
+.trilha-corpo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.trilha-corpo b{font-size:16px}
+.trilha-acao{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.trilha-dur{font-size:12px;color:var(--mute)}
+.selo{background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:var(--r-pill);margin-left:6px;vertical-align:middle}
+
+/* ---------- Vídeo ---------- */
+.videos{display:flex;flex-direction:column;gap:16px}
+.videoslot{display:flex;flex-direction:column;gap:10px}
+.video-box{position:relative;aspect-ratio:16/9;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:var(--r-lg);display:grid;place-items:center;gap:6px;overflow:hidden;cursor:pointer;text-align:center;padding:10px}
+.video-box.vazio{cursor:default}
+.video-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-box .play{font-size:34px;color:#fff;background:var(--accent);width:60px;height:60px;border-radius:50%;
+  display:grid;place-items:center;box-shadow:var(--shadow)}
+.video-box .play-off{color:var(--mute)}
+.video-legenda{font-weight:600}
+.video-guia{background:var(--panel-2);border:1px dashed var(--line);border-radius:var(--r);padding:12px 14px;font-size:13px}
+.video-guia ul{margin:6px 0 0 18px;color:var(--mute)}
+
+/* ---------- Resumo / listas ---------- */
+.resumo{margin-left:18px;display:flex;flex-direction:column;gap:6px}
+.resumo li{color:var(--mute)}
+
+/* ---------- Cards pequenos (Como funciona) ---------- */
+.grid-cards{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:620px){.grid-cards{grid-template-columns:repeat(2,1fr)}}
+.mini-card{display:flex;flex-direction:column;gap:4px;padding:14px;border:1px solid var(--line);
+  border-radius:var(--r);background:var(--panel-2)}
+.mini-card .num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+  display:grid;place-items:center;font-weight:700;font-size:14px}
+
+/* ---------- Chips de nicho ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-btn{padding:9px 16px;border:1px solid var(--line);border-radius:var(--r-pill);
+  background:var(--panel-2);color:var(--ink);font-weight:600;min-height:var(--touch)}
+.chip-btn.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+
+/* ---------- Escolha de caminho ---------- */
+.escolha-grid{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:620px){.escolha-grid{grid-template-columns:1fr 1fr}}
+.escolha-card{display:flex;flex-direction:column;gap:6px;text-align:left;padding:18px;
+  border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel-2);min-height:var(--touch)}
+.escolha-card.on{border-color:var(--accent);box-shadow:var(--shadow)}
+.escolha-card b{font-size:16px}
+
+/* ---------- Linha do tempo ---------- */
+.timeline{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.tl-item{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:6px 12px;font-size:14px;font-weight:600}
+.tl-seta{color:var(--mute)}
+
+/* ---------- Mensagens prontas ---------- */
+.msg-card b{font-size:15px}
+.msg-texto{background:var(--panel-2);border-radius:var(--r);padding:12px 14px;margin:10px 0;
+  white-space:pre-wrap;font-size:15px;color:var(--ink)}
+.msg-acoes{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ---------- Checklist ---------- */
+.checklist{display:flex;flex-direction:column;gap:8px}
+.check-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;
+  border:1px solid var(--line);border-radius:var(--r);background:var(--panel-2);min-height:var(--touch)}
+.check-item.on{border-color:var(--ok)}
+.check-item.ro{opacity:.8}
+.check-box{flex:none;width:24px;height:24px;border-radius:7px;border:2px solid var(--line-2);
+  display:grid;place-items:center;color:#fff}
+.check-item.on .check-box{background:var(--ok);border-color:var(--ok)}
+.check-label{flex:1}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(var(--bottomnav-h) + 16px);transform:translate(-50%,20px);
+  background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:12px 18px;
+  border-radius:var(--r);box-shadow:var(--shadow-soft);opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:60;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(min-width:900px){.toast{bottom:24px}}

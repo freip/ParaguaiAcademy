@@ -9,6 +9,8 @@ import * as publica from "./pages/publica.js";
 import * as login from "./pages/login.js";
 import * as trocarSenha from "./pages/trocarSenha.js";
 import * as placeholders from "./pages/placeholders.js";
+import * as trilha from "./pages/trilha.js";
+import * as etapa from "./pages/etapa.js";
 
 let ctx = null;
 let ctxCarregado = false;
@@ -23,6 +25,7 @@ function rotaAtual() {
 }
 
 const app = {
+  ctx() { return ctx; },
   navegar(rota) { location.hash = rota; },
   async aposLogin(novoCtx) {
     ctx = novoCtx;
@@ -31,6 +34,7 @@ const app = {
     render();
   },
   async recarregar() { try { ctx = await carregarContexto(); } catch {} },
+  async atualizar() { await this.recarregar(); render(); },
   sair() { logout(); ctx = null; location.hash = "#/aula-gratis"; },
 };
 
@@ -83,8 +87,12 @@ function render() {
     if (!temAcesso(ctx)) { location.hash = "#/aula-gratis"; return; } // logado sem acesso pago
     montarShell();
     montarNav(ctx);
-    document.getElementById("view").innerHTML = placeholders.render(ctx, base);
+    const view = document.getElementById("view");
+    const seg = (location.hash.slice(1) || "/app").split("/"); // ["","app","trilha","3"]
     window.scrollTo(0, 0);
+    if (base === "#/app/trilha" && seg[3]) { etapa.montar(ctx, app, view, seg[3]); return; }
+    if (base === "#/app/trilha") { trilha.montar(ctx, app, view); return; }
+    view.innerHTML = placeholders.render(ctx, base);
     return;
   }
 
