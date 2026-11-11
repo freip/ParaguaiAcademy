@@ -1,0 +1,55 @@
+/* Painel do admin. Usa os tokens de app/styles/tokens.css. */
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 "DM Sans",system-ui,sans-serif}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+h1{font-size:24px}h2{font-size:18px;margin-bottom:10px}
+.muted{color:var(--mute)}
+label{display:block;font-size:14px;font-weight:600;margin-bottom:10px}
+input,select,textarea{width:100%;background:var(--panel-2);border:1px solid var(--line-2);color:var(--ink);
+  border-radius:10px;padding:10px 12px;font:inherit;margin-top:4px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+.chk{display:flex;align-items:center;gap:8px;font-weight:500}
+.chk input{width:auto;margin:0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  color:#fff;font-weight:700;border-radius:12px;padding:11px 20px}
+.btn.sm{padding:8px 14px;font-size:14px}
+.link{color:var(--accent-ink);text-decoration:underline;font-weight:600;font-size:14px}
+.link.del{color:var(--err)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.msg{font-size:14px;margin-top:8px}.msg.erro{color:var(--err)}.msg.ok{color:var(--ok)}
+
+.login{max-width:400px;margin:70px auto}
+.login .btn{width:100%;margin-top:6px}
+
+.admin-shell{display:flex;min-height:100vh}
+.admin-side{width:220px;flex:none;border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:4px}
+.admin-side .logo{font-weight:800;padding:0 8px 14px;font-size:15px}
+.admin-side .logo span{color:var(--accent-ink)}
+.admin-side nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.admin-side nav button{text-align:left;padding:10px 12px;border-radius:10px;color:var(--mute);font-weight:600}
+.admin-side nav button:hover{color:var(--ink);background:var(--panel)}
+.admin-side nav button.on{color:#fff;background:var(--accent)}
+.admin-main{flex:1;min-width:0;padding:28px 24px;max-width:900px}
+
+.sec-topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.lista .row,.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.form-grid{display:flex;flex-direction:column;gap:2px}
+.form-acoes{display:flex;align-items:center;gap:12px;margin-top:10px}
+.dois{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nichos-check{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.tbl th,.tbl td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{color:var(--mute);font-size:12px;text-transform:uppercase}
+.tag{background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-right:4px}
+.busca{margin:0}
+.mt-2{margin-top:10px}
+
+@media(max-width:720px){
+  .admin-shell{flex-direction:column}
+  .admin-side{width:100%;flex-direction:row;flex-wrap:wrap;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .admin-side nav{flex-direction:row;flex-wrap:wrap}
+  .dois{grid-template-columns:1fr}
+}
