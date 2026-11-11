@@ -1,6 +1,6 @@
 // Página de uma etapa da trilha. Mesmo layout para as 8 etapas: cabeçalho,
-// vídeos, resumo, recursos, mensagens prontas, checklist, botão "Concluí esta
-// etapa" (bloqueio no servidor) e navegação. Guarda o acesso por URL direta.
+// vídeos, resumo, recursos (inclui ferramentas embutidas), mensagens prontas,
+// checklist, botão "Concluí esta etapa" (bloqueio no servidor) e navegação.
 import {
   etapaPorNumero, COMO_FUNCIONA, SINAIS_GOLPE, CHECKLIST_ANTES_PAGAR, LINHA_TEMPO,
 } from "../content/trilha.js";
@@ -17,13 +17,9 @@ import {
 import * as VideoSlot from "../components/VideoSlot.js";
 import * as MensagemPronta from "../components/MensagemPronta.js";
 import * as Checklist from "../components/Checklist.js";
-
-const FERRAMENTAS = {
-  fornecedores: ["Fornecedores", "#/app/fornecedores"],
-  calculadora: ["Calculadora", "#/app/calculadora"],
-  freteiros: ["Freteiros", "#/app/freteiros"],
-  envio: ["Envio no Brasil", "#/app/envio"],
-};
+import * as fornecedores from "../tools/fornecedores.js";
+import * as freteiros from "../tools/freteiros.js";
+import * as envio from "../tools/envio.js";
 
 const anteriorNavegavel = (ctx, n) => {
   for (let m = n - 1; m >= 1; m--) if (statusEtapa(ctx, m) !== "nao_se_aplica") return m;
@@ -74,29 +70,39 @@ export async function montar(ctx, app, view, numero) {
 
   const prog = ctx.progresso.find((p) => p.etapa === numero) || { checklist: {} };
   const estado = { ...(prog.checklist || {}) };
-  const soLeitura = status !== "atual";          // concluída = rever, não edita
+  const soLeitura = status !== "atual";
   const admin = ctx.perfil?.papel === "admin";
   const caminho = ctx.perfil?.caminho || "paraguai";
   const mensagens = (conteudo.mensagens || []).filter((m) => !m.caminho || m.caminho === caminho);
+  const el = (id) => document.getElementById(id);
 
-  function corpo() {
-    return `${voltar}
-      <div class="mt-3"><span class="muted">Etapa ${numero} de ${TOTAL_ETAPAS}</span>
-        <h1>${esc(conteudo.titulo)}</h1><p class="sub">${esc(conteudo.descricao)}</p></div>
-      ${videos.length ? `<div class="videos mt-4">${videos.map((v) =>
-        VideoSlot.html(v, { assistido: assistidos.has(v.id), admin })).join("")}</div>` : ""}
-      <div class="card mt-4"><h2>Resumo</h2>
-        <ul class="resumo mt-3">${conteudo.resumo.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
-      ${blocosEspeciais(conteudo, ctx, config)}
-      ${mensagens.length ? `<div class="mt-4"><h2>Mensagens prontas</h2>
-        <p class="sub">Copie, troque o que está entre [colchetes] e envie.</p>
-        ${mensagens.map((m, i) => MensagemPronta.html(m, i, {})).join("")}</div>` : ""}
-      <div class="mt-4">${Checklist.html(defsChecklist, estado, soLeitura)}</div>
-      ${navegacao(ctx, numero)}`;
+  view.innerHTML = `${voltar}
+    <div class="mt-3"><span class="muted">Etapa ${numero} de ${TOTAL_ETAPAS}</span>
+      <h1>${esc(conteudo.titulo)}</h1><p class="sub">${esc(conteudo.descricao)}</p></div>
+    ${videos.length ? `<div class="videos mt-4">${videos.map((v) =>
+      VideoSlot.html(v, { assistido: assistidos.has(v.id), admin })).join("")}</div>` : ""}
+    <div class="card mt-4"><h2>Resumo</h2>
+      <ul class="resumo mt-3">${conteudo.resumo.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
+    ${blocosEspeciais(conteudo, ctx, config)}
+    ${mensagens.length ? `<div class="mt-4"><h2>Mensagens prontas</h2>
+      <p class="sub">Copie, troque o que está entre [colchetes] e envie.</p>
+      ${mensagens.map((m, i) => MensagemPronta.html(m, i, {})).join("")}</div>` : ""}
+    <div id="bloco-checklist" class="mt-4">${Checklist.html(defsChecklist, estado, soLeitura)}</div>
+    ${navegacao(ctx, numero)}`;
+
+  // Monta as ferramentas embutidas (mesmo componente da página)
+  for (const f of conteudo.ferramentas || []) {
+    const alvo = el(`embed-${f}`);
+    if (!alvo) continue;
+    if (f === "fornecedores") fornecedores.montar(ctx, app, alvo, { embutido: true });
+    else if (f === "freteiros") freteiros.montar(ctx, app, alvo, { embutido: true });
+    else if (f === "envio") envio.montar(ctx, app, alvo, { embutido: true });
   }
 
-  const render = () => { view.innerHTML = corpo(); };
-  render();
+  const renderChecklist = () => {
+    const c = el("bloco-checklist");
+    if (c) c.innerHTML = Checklist.html(defsChecklist, estado, soLeitura);
+  };
 
   view.onkeydown = (ev) => {
     const box = ev.target.closest?.("[data-acao='carregar-video']");
@@ -109,7 +115,6 @@ export async function montar(ctx, app, view, numero) {
     const acao = alvo.dataset.acao;
 
     if (acao === "carregar-video") { VideoSlot.carregarPlayer(alvo); return; }
-
     if (acao === "copiar") { MensagemPronta.copiar(alvo, mensagens[+alvo.dataset.idx].texto); return; }
 
     if (acao === "assistir") {
@@ -117,7 +122,7 @@ export async function montar(ctx, app, view, numero) {
       try {
         if (assistidos.has(id)) { await desmarcarAssistido(ctx.uid, id); assistidos.delete(id); }
         else { await marcarAssistido(ctx.uid, id); assistidos.add(id); }
-        render();
+        alvo.outerHTML = VideoSlot.botaoAssistir(id, assistidos.has(id));
       } catch (e) { toast(e.message); alvo.disabled = false; }
       return;
     }
@@ -125,7 +130,7 @@ export async function montar(ctx, app, view, numero) {
     if (acao === "check") {
       const item = alvo.dataset.item; const novo = estado[item] !== true;
       alvo.disabled = true;
-      try { await marcarChecklist(numero, item, novo); estado[item] = novo; render(); }
+      try { await marcarChecklist(numero, item, novo); estado[item] = novo; renderChecklist(); }
       catch (e) { toast(e.message); alvo.disabled = false; }
       return;
     }
@@ -217,10 +222,13 @@ function cardEscolhaCaminho(ctx) {
 }
 
 function cardFerramenta(f) {
-  const [titulo, rota] = FERRAMENTAS[f] || [f, "#/app"];
-  return `<div class="card mt-4"><h2>${esc(titulo)}</h2>
-    <p class="muted mt-3">Esta ferramenta abre aqui dentro da etapa (chega na próxima fase).</p>
-    <a class="link" href="${rota}">Abrir a ferramenta</a></div>`;
+  if (f === "calculadora") {
+    return `<div class="card mt-4"><h2>Calculadora</h2>
+      <p class="muted mt-3">A calculadora abre aqui dentro da etapa (chega na fase 7).</p>
+      <a class="link" href="#/app/calculadora">Abrir a calculadora</a></div>`;
+  }
+  const nomes = { fornecedores: "Fornecedores", freteiros: "Freteiros", envio: "Envio no Brasil" };
+  return `<h2 class="embed-title mt-4">${nomes[f] || f}</h2><div id="embed-${f}"></div>`;
 }
 
 const cardNota = () =>
@@ -235,10 +243,10 @@ const cardNota = () =>
 function cardMentoria(config) {
   const titulo = config.mentoria_titulo || "Mentoria individual com o Mauro";
   const valor = config.mentoria_valor ? ` Valor: ${brl(+config.mentoria_valor)}.` : "";
-  const whats = config.mentoria_whatsapp;
+  const whats = (config.mentoria_whatsapp || "").replace(/\D/g, "");
   const botao = whats
     ? `<a class="btn ok mt-3" target="_blank" rel="noopener"
-         href="https://wa.me/${esc(whats)}?text=${encodeURIComponent("Quero fazer a mentoria individual.")}">
+         href="https://wa.me/${whats}?text=${encodeURIComponent("Quero fazer a mentoria individual.")}">
          Quero a mentoria</a>`
     : `<p class="muted mt-3">Contato da mentoria em breve.</p>`;
   return `<div class="card mt-4"><h2>${esc(titulo)}</h2>

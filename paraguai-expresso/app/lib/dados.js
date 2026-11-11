@@ -38,3 +38,18 @@ export const definirCaminho = (caminho) => rpc("definir_caminho", { p_caminho: c
 
 export const escolherNichoPrincipal = (nicho) =>
   rpc("escolher_nicho_principal", { p_nicho: nicho });
+
+// ---------- Ferramentas (Fase 6) ----------
+export const listaFornecedores = () =>
+  rest("fornecedores?select=*&ativo=is.true&order=destaque.desc,nome.asc");
+
+export const listaFreteiros = () =>
+  rest("freteiros?select=*&ativo=is.true&order=nome.asc");
+
+export const regrasFreteiro = () =>
+  rest("regras_freteiro?select=*&order=ordem.asc");
+
+export const pesosNichos = () => rest("nichos?select=slug,peso_padrao_g");
+
+export const lojaDosSocios = () =>
+  rest("fornecedores?select=*&loja_dos_socios=is.true&ativo=is.true&limit=1");

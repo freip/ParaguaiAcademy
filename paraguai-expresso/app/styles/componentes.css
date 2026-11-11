@@ -82,6 +82,39 @@
 .check-item.on .check-box{background:var(--ok);border-color:var(--ok)}
 .check-label{flex:1}
 
+/* ---------- Ferramentas: abas, busca, selos ---------- */
+.abas{display:flex;gap:8px}
+.aba{flex:1;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel-2);
+  color:var(--mute);font-weight:700;min-height:var(--touch)}
+.aba.on{border-color:var(--accent);background:var(--accent-soft);color:#fff}
+.busca{width:100%;background:var(--panel-2);border:1px solid var(--line-2);color:var(--ink);
+  border-radius:var(--r);padding:12px 14px;font:inherit;min-height:var(--touch)}
+.busca:focus{outline:2px solid var(--accent);border-color:transparent}
+.embed-title{font-size:20px;font-weight:700}
+
+.forn-card .forn-topo{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start}
+.forn-topo b{font-size:17px}
+.selos{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.selo-ok,.selo-dest,.selo-socios{font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill)}
+.selo-ok{background:var(--ok-soft);color:var(--ok)}
+.selo-dest{background:var(--accent-soft);color:var(--accent-ink)}
+.selo-socios{background:var(--warn-soft);color:var(--warn)}
+.forn-meta{display:flex;flex-direction:column;gap:4px;font-size:14px}
+.forn-meta .muted{color:var(--mute)}
+.mt-2{margin-top:10px}
+
+/* tabela (freteiro) */
+.tabela{width:100%;border-collapse:collapse;font-size:14px}
+.tabela th,.tabela td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tabela th{color:var(--mute);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+
+/* envio: mini-calculadora de peso */
+.mini-calc{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--panel-2);
+  border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.mini-calc input{width:90px;background:var(--panel);border:1px solid var(--line-2);color:var(--ink);
+  border-radius:var(--r-sm);padding:10px;font:inherit;min-height:var(--touch)}
+.mini-calc label{font-weight:600}
+
 /* ---------- Toast ---------- */
 .toast{position:fixed;left:50%;bottom:calc(var(--bottomnav-h) + 16px);transform:translate(-50%,20px);
   background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:12px 18px;

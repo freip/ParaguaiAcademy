@@ -65,7 +65,7 @@ export function html(video, opts = {}) {
   </div>`;
 }
 
-function botaoAssistir(id, assistido) {
+export function botaoAssistir(id, assistido) {
   return assistido
     ? `<button class="btn plain sm" data-acao="assistir" data-video="${esc(id)}">${ic("check", 16)} Assistida (desfazer)</button>`
     : `<button class="btn ghost sm" data-acao="assistir" data-video="${esc(id)}">Marquei como assistida</button>`;
