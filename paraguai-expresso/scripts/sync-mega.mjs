@@ -75,18 +75,19 @@ function parsePagina(html) {
       obj = JSON.parse(json);
     } catch { continue; }
     const code = String(obj.code ?? "");
-    const slug = slugs[code] || "";
-    const nome = slug ? prettify(slug) : `Produto ${code}`;
+    const pl = obj.product_lang || {};
+    const slug = pl.slug || slugs[code] || "";
+    const nome = (pl.name_web || pl.name || (slug ? prettify(slug) : `Produto ${code}`)).trim();
     produtos.push({
       origem_id: String(obj.id),
       sku: code,
       nome,
+      marca: obj.brand?.name || null,
       preco: Number(obj.price) || 0,
       promo: Number(obj.price_promo) || 0,
       hide: obj.hide_price === true || obj.hide_price === "true",
       category_id: obj.category_id,
-      brand_id: obj.brand_id,
-      stock: obj.stock ?? obj.status ?? obj.st ?? null,
+      stock: typeof obj.stock === "number" ? obj.stock : null,
       imagem_url: obj.image ? RES + obj.image : null,
       url: slug ? `${BASE}/producto/${code}/${slug}` : `${BASE}/producto/${code}`,
     });
@@ -120,9 +121,9 @@ async function coletarCategoria(cat) {
     const nicho = classificarNicho(p.nome, cat.nicho);
     const preco_usd = (p.promo > 0 && p.promo < p.preco) ? p.promo : p.preco;
     itens.push({
-      origem_id: p.origem_id, origem_categoria: String(cat.id), sku: p.sku, nome: p.nome,
+      origem_id: p.origem_id, origem_categoria: String(cat.id), sku: p.sku, nome: p.nome, marca: p.marca,
       nicho, preco_usd, imagem_url: p.imagem_url, url: p.url,
-      em_estoque: p.stock == null ? true : Number(p.stock) > 0,
+      em_estoque: p.stock == null ? true : p.stock > 0,
       oculto: p.hide,
     });
   }
@@ -142,32 +143,37 @@ async function getLojaId() {
 }
 
 async function gravar(lojaId, col) {
-  // conta anterior (para a guarda de 30%)
+  const now = new Date().toISOString();
   const prev = await (await sb(`sync_mega?select=coletados&category_id=eq.${col.categoria.id}`)).json();
   const anterior = prev[0]?.coletados ?? null;
   const queda = anterior && col.coletados < anterior * (1 - QUEDA_LIMITE);
   let alerta = null;
 
-  // upsert dos produtos coletados (chave: loja_id + origem_id)
-  const now = new Date().toISOString();
-  const payload = col.itens.map((it) => ({ ...it, loja_id: lojaId, fonte: "mega", atualizado_em: now, marca: null, faixa_frete: null }));
-  if (payload.length) {
-    await sb("produtos?on_conflict=loja_id,origem_id", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(payload) });
-  }
-
-  // marca indisponível só se a categoria foi coletada por completo e sem queda >30%
+  // Só mexe no estoque se a categoria foi coletada por completo e sem queda >30%.
+  // Zera a categoria (um PATCH, sem lista de ids) e o upsert reativa os presentes;
+  // quem sumiu fica em_estoque = false.
   if (col.completo && !queda) {
-    const ids = col.itens.map((i) => i.origem_id);
-    // zera estoque dos que não voltaram nesta coleta
-    const notIn = ids.length ? `&origem_id=not.in.(${ids.map((x) => `"${x}"`).join(",")})` : "";
-    await sb(`produtos?loja_id=eq.${lojaId}&fonte=eq.mega&origem_categoria=eq.${col.categoria.id}${notIn}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ em_estoque: false, atualizado_em: now }) });
+    await sb(`produtos?loja_id=eq.${lojaId}&fonte=eq.mega&origem_categoria=eq.${col.categoria.id}`,
+      { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ em_estoque: false, atualizado_em: now }) });
   } else if (queda) {
-    alerta = `Queda de ${anterior}→${col.coletados} (>30%). Estoque preservado.`;
+    alerta = `Queda de ${anterior}->${col.coletados} (>30%). Estoque preservado.`;
   } else if (!col.completo) {
     alerta = "Coleta incompleta. Estoque preservado.";
   }
 
-  await sb("sync_mega?on_conflict=category_id", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ category_id: col.categoria.id, slug: col.categoria.slug, nicho: col.categoria.nicho, total: col.resultados, coletados: col.coletados, atualizado_em: now, alerta }) });
+  // upsert em lotes (chave: loja_id + origem_id)
+  const payload = col.itens.map((it) => ({ ...it, loja_id: lojaId, fonte: "mega", atualizado_em: now, faixa_frete: null }));
+  for (let i = 0; i < payload.length; i += 500) {
+    await sb("produtos?on_conflict=loja_id,origem_id", {
+      method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(payload.slice(i, i + 500)),
+    });
+  }
+
+  await sb("sync_mega?on_conflict=category_id", {
+    method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ category_id: col.categoria.id, slug: col.categoria.slug, nicho: col.categoria.nicho, total: col.resultados, coletados: col.coletados, atualizado_em: now, alerta }),
+  });
   return alerta;
 }
 
