@@ -35,7 +35,7 @@ export function embedUrl(url) {
  * @param {Object} opts   { assistido, admin }
  */
 export function html(video, opts = {}) {
-  const { assistido = false, admin = false } = opts;
+  const { assistido = false, admin = false, semAssistir = false } = opts;
   const titulo = esc(video.titulo || "");
   const duracao = video.duracao ? esc(video.duracao) : "";
   const legenda = `${titulo}${duracao ? " · " + duracao : ""}`;
@@ -52,7 +52,7 @@ export function html(video, opts = {}) {
         <span class="video-legenda">${legenda}</span>
         <span class="muted">Vídeo em breve</span>
       </div>${guia}
-      ${botaoAssistir(video.id, assistido)}
+      ${semAssistir ? "" : botaoAssistir(video.id, assistido)}
     </div>`;
   }
 
@@ -61,7 +61,7 @@ export function html(video, opts = {}) {
       <span class="play">▶</span>
       <span class="video-legenda">${legenda}</span>
     </div>
-    ${botaoAssistir(video.id, assistido)}
+    ${semAssistir ? "" : botaoAssistir(video.id, assistido)}
   </div>`;
 }
 

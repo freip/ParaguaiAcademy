@@ -82,7 +82,12 @@ function render() {
   if (base.startsWith("#/sair")) { app.sair(); return; }
 
   // Públicas
-  if (base === "#/" || base === "#/aula-gratis") { telaSimples(publica.render()); return; }
+  if (base === "#/" || base === "#/aula-gratis") {
+    shellMontado = false;
+    root().innerHTML = '<div id="pub"></div>';
+    publica.montar(document.getElementById("pub"));
+    return;
+  }
   if (base === "#/entrar") {
     if (ctx) { location.hash = "#/app"; return; }
     telaSimples(login.render());
@@ -127,7 +132,9 @@ function render() {
     return;
   }
 
-  telaSimples(publica.render());
+  shellMontado = false;
+  root().innerHTML = '<div id="pub"></div>';
+  publica.montar(document.getElementById("pub"));
 }
 
 async function boot() {
