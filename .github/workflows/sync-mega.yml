@@ -5,8 +5,8 @@ name: Sync Mega Eletrônicos
 
 on:
   workflow_dispatch:        # permite rodar manualmente pelo botão "Run workflow"
-  # schedule:
-  #   - cron: "0 15 * * *"  # 15:00 UTC = 12:00 BRT. Descomente para ligar o diário.
+  schedule:
+    - cron: "0 15 * * *"    # 15:00 UTC = 12:00 BRT (coleta diária)
 
 jobs:
   sync:

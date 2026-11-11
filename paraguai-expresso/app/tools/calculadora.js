@@ -52,15 +52,29 @@ export async function montar(ctx, app, container, opts = {}) {
   const canalAtual = () => canais.find((c) => c.id === estado.canalId);
   const taxaCanal = () => (+(canalAtual()?.taxa_percentual || 0)) / 100;
 
+  // Identifica a cobrança do freteiro automaticamente pelo nome do produto.
   function freteDoItem(item) {
     if (brasil) return { tipo: null };
-    const rs = regras.filter((r) => r.freteiro_id === estado.freteiroId && r.nicho === item.nicho);
-    const perc = rs.find((r) => r.tipo === "percentual");
+    const nome = (item.nome || "").toLowerCase();
+    const precoBrl = (Number(item.preco_usd) || 0) * estado.cotacao;
+    if (/\biphone\b/.test(nome)) {
+      const m = nome.match(/iphone\s*(\d{1,2})/);
+      const modelo = m ? +m[1] : 0;
+      return modelo >= 17
+        ? { tipo: "fixo_unidade", valor: 230, faixa: "iPhone 17 ou mais novo" }
+        : { tipo: "fixo_unidade", valor: 180, faixa: "iPhone até o 16" };
+    }
+    if (/xiaomi|redmi|\bpoco\b/.test(nome)) {
+      return precoBrl <= 3000
+        ? { tipo: "fixo_unidade", valor: 150, faixa: "Xiaomi até R$ 3.000" }
+        : { tipo: "consulta", faixa: "Acima de R$ 3.000 — consulte o freteiro" };
+    }
+    // Perfume e demais: regra por nicho da tabela do freteiro (percentual).
+    const perc = regras.find((r) => r.freteiro_id === estado.freteiroId && r.nicho === item.nicho && r.tipo === "percentual");
     if (perc) return { tipo: "percentual", valor: estado.freteiroPct ?? perc.valor, compra_min: perc.compra_minima_brl, faixa: perc.faixa };
-    const fixo = rs.find((r) => r.tipo === "fixo_unidade");
+    const fixo = regras.find((r) => r.freteiro_id === estado.freteiroId && r.nicho === item.nicho && r.tipo === "fixo_unidade");
     if (fixo) return { tipo: "fixo_unidade", valor: fixo.valor, faixa: fixo.faixa };
-    if (rs.find((r) => r.tipo === "consulta")) return { tipo: "consulta" };
-    return { tipo: null, semRegra: true };
+    return { tipo: "consulta", faixa: "Consulte o freteiro" };
   }
 
   function computar() {
@@ -91,10 +105,12 @@ export async function montar(ctx, app, container, opts = {}) {
       <div class="calc-grid mt-3">
         <div class="calc-left">
           <div class="card">
-            <h2>Produtos</h2>
+            <h2>Escolha os produtos</h2>
             <div class="chips mt-2">${ctx.nichos.map((s) =>
               `<button class="chip-btn${estado.nicho === s ? " on" : ""}" data-nicho="${esc(s)}">${esc(nomeNicho(ctx, s))}</button>`).join("")}</div>
-            <input class="busca mt-3" id="busca-prod" placeholder="Buscar por nome, marca ou SKU" value="${esc(estado.busca)}">
+            <p class="muted mt-2" id="prod-info-topo" style="font-size:13px"></p>
+            <input class="busca" id="busca-prod" placeholder="Buscar por nome, marca ou SKU" value="${esc(estado.busca)}">
+            <span class="aviso mt-2">Preços de vitrine das lojas. Confirme valor e estoque antes de comprar.</span>
             <div id="lista-produtos" class="mt-3"></div>
             <button class="btn plain sm mt-3" data-acao="add-manual">+ Adicionar produto manualmente</button>
           </div>
@@ -115,15 +131,26 @@ export async function montar(ctx, app, container, opts = {}) {
   function atualizarProdutos() {
     const alvo = el("lista-produtos"); if (!alvo) return;
     const p = estado.produtos;
+    const info = el("prod-info-topo");
+    if (info) {
+      const maxA = p.reduce((m, x) => (x.atualizado_em && x.atualizado_em > m ? x.atualizado_em : m), "");
+      info.textContent = p.length ? `${p.length} produtos${maxA ? ` · atualizada em ${data(maxA)} às 12h` : ""}` : "";
+    }
     if (!p.length) { alvo.innerHTML = vazio("Nenhum produto encontrado. Use 'Adicionar manualmente'."); return; }
-    alvo.innerHTML = `<p class="muted" style="font-size:13px">${p.length} produto(s)</p>` + p.map((prod) => {
+    const cot = estado.cotacao;
+    alvo.innerHTML = p.map((prod) => {
       const estoque = prod.em_estoque ? '<span class="selo-ok">Em estoque</span>' : '<span class="selo-dest" style="background:var(--err-soft);color:var(--err)">Indisponível</span>';
       const loja = prod.lojas?.nome ? ` · ${esc(prod.lojas.nome)}` : "";
       const verLoja = prod.url ? `<a class="link" href="${esc(prod.url)}" target="_blank" rel="noopener">ver na loja</a>` : "";
+      const aproxBrl = cot ? ` · ~${brl(prod.preco_usd * cot)}` : "";
+      const foto = prod.imagem_url
+        ? `<img class="prod-foto" src="${esc(prod.imagem_url)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`
+        : '<div class="prod-foto"></div>';
       return `<div class="prod-row">
+        ${foto}
         <div class="prod-info"><b>${esc(prod.nome)}</b>
           <span class="muted">${esc(prod.marca || "")}${loja}${prod.sku ? " · " + esc(prod.sku) : ""}</span>
-          <span>${usd(prod.preco_usd)} ${estoque} ${verLoja}</span></div>
+          <span>${usd(prod.preco_usd)}${aproxBrl} ${estoque} ${verLoja}</span></div>
         <button class="btn sm" data-acao="add" data-pid="${prod.id}" ${prod.em_estoque ? "" : "disabled"}>+ Adicionar</button>
       </div>`;
     }).join("");
@@ -190,7 +217,7 @@ export async function montar(ctx, app, container, opts = {}) {
     if (!brasil) {
       const min = estado.itens.map((i) => freteDoItem(i).compra_min).find((v) => v);
       if (min && res.mercadoria_brl < min) av.push(`Abaixo da compra mínima do freteiro (${brl(min)}).`);
-      if (estado.itens.some((i) => freteDoItem(i).semRegra)) av.push("Há item sem regra de frete para o nicho. Consulte o freteiro.");
+      if (estado.itens.some((i) => freteDoItem(i).tipo === "consulta")) av.push("Há item que precisa de consulta ao freteiro (ex.: celular acima de R$ 3.000).");
     }
     return av;
   }

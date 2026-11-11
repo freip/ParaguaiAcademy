@@ -129,8 +129,10 @@ select[data-sel]{background:var(--panel-2);border:1px solid var(--line-2);color:
   padding:9px 10px;font:inherit;min-height:40px;max-width:100%}
 
 .prod-row{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)}
-.prod-info{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:14px}
-.prod-info b{font-size:15px}
+.prod-foto{width:48px;height:48px;flex:none;border-radius:8px;object-fit:cover;background:var(--panel-2)}
+.prod-info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;font-size:14px}
+.prod-info b{font-size:15px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.prod-row .btn.sm{flex:none}
 
 .item-row{border-top:1px solid var(--line);padding:12px 0}
 .item-top{display:flex;justify-content:space-between;gap:8px;align-items:center}

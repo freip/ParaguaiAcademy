@@ -56,13 +56,21 @@ export const lojaDosSocios = () =>
 
 // ---------- Calculadora (Fase 7) ----------
 export function buscarProdutos(nicho, termo) {
-  let q = `produtos?select=*,lojas(nome,site,whatsapp,minimo_usd)&order=nome.asc&limit=30`;
+  // Produtos com preço escondido na origem (oculto) não aparecem na busca.
+  let q = `produtos?select=*,lojas(nome,site,whatsapp,minimo_usd)&oculto=is.false&order=em_estoque.desc,nome.asc&limit=40`;
   if (nicho) q += `&nicho=eq.${encodeURIComponent(nicho)}`;
   const t = (termo || "").trim();
   if (t) {
     const e = encodeURIComponent(t);
     q += `&or=(nome.ilike.*${e}*,marca.ilike.*${e}*,sku.ilike.*${e}*)`;
   }
+  return rest(q);
+}
+
+// Data da última atualização dos produtos de um nicho (para "atualizada em...").
+export function ultimaAtualizacaoProdutos(nicho) {
+  let q = `produtos?select=atualizado_em&order=atualizado_em.desc&limit=1`;
+  if (nicho) q += `&nicho=eq.${encodeURIComponent(nicho)}`;
   return rest(q);
 }
 
