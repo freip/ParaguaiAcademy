@@ -6,7 +6,6 @@ import { ETAPA_DA_FERRAMENTA, TOTAL_ETAPAS } from "../config.js";
 
 const PAGINAS = {
   "#/app":             ["Início", "A nova tela inicial chega na fase 8."],
-  "#/app/calculadora": ["Calculadora", "A calculadora chega na fase 7.", "calculadora"],
   "#/app/suporte":     ["Suporte", "O card de suporte chega na fase 8."],
   "#/app/certificado": ["Certificado", "O certificado libera ao concluir as 8 etapas."],
 };

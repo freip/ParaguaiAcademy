@@ -20,6 +20,7 @@ import * as Checklist from "../components/Checklist.js";
 import * as fornecedores from "../tools/fornecedores.js";
 import * as freteiros from "../tools/freteiros.js";
 import * as envio from "../tools/envio.js";
+import * as calculadora from "../tools/calculadora.js";
 
 const anteriorNavegavel = (ctx, n) => {
   for (let m = n - 1; m >= 1; m--) if (statusEtapa(ctx, m) !== "nao_se_aplica") return m;
@@ -97,6 +98,7 @@ export async function montar(ctx, app, view, numero) {
     if (f === "fornecedores") fornecedores.montar(ctx, app, alvo, { embutido: true });
     else if (f === "freteiros") freteiros.montar(ctx, app, alvo, { embutido: true });
     else if (f === "envio") envio.montar(ctx, app, alvo, { embutido: true });
+    else if (f === "calculadora") calculadora.montar(ctx, app, alvo, { embutido: true, modoPreco: numero === 8 ? "preco" : "margem" });
   }
 
   const renderChecklist = () => {
@@ -222,12 +224,7 @@ function cardEscolhaCaminho(ctx) {
 }
 
 function cardFerramenta(f) {
-  if (f === "calculadora") {
-    return `<div class="card mt-4"><h2>Calculadora</h2>
-      <p class="muted mt-3">A calculadora abre aqui dentro da etapa (chega na fase 7).</p>
-      <a class="link" href="#/app/calculadora">Abrir a calculadora</a></div>`;
-  }
-  const nomes = { fornecedores: "Fornecedores", freteiros: "Freteiros", envio: "Envio no Brasil" };
+  const nomes = { fornecedores: "Fornecedores", freteiros: "Freteiros", envio: "Envio no Brasil", calculadora: "Calculadora" };
   return `<h2 class="embed-title mt-4">${nomes[f] || f}</h2><div id="embed-${f}"></div>`;
 }
 

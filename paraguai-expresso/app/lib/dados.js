@@ -53,3 +53,27 @@ export const pesosNichos = () => rest("nichos?select=slug,peso_padrao_g");
 
 export const lojaDosSocios = () =>
   rest("fornecedores?select=*&loja_dos_socios=is.true&ativo=is.true&limit=1");
+
+// ---------- Calculadora (Fase 7) ----------
+export function buscarProdutos(nicho, termo) {
+  let q = `produtos?select=*,lojas(nome,site,whatsapp,minimo_usd)&order=nome.asc&limit=30`;
+  if (nicho) q += `&nicho=eq.${encodeURIComponent(nicho)}`;
+  const t = (termo || "").trim();
+  if (t) {
+    const e = encodeURIComponent(t);
+    q += `&or=(nome.ilike.*${e}*,marca.ilike.*${e}*,sku.ilike.*${e}*)`;
+  }
+  return rest(q);
+}
+
+export const canaisVenda = () => rest("canais_venda?select=*&ativo=is.true&order=id.asc");
+export const regraNota = () => rest("regras_nota?select=*&id=eq.1");
+
+export const salvarSimulacao = (payload) =>
+  rest("simulacoes", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify(payload) });
+
+export const listarSimulacoes = () =>
+  rest("simulacoes?select=id,nome,itens,parametros,resultado,criada_em&order=criada_em.desc");
+
+export const excluirSimulacao = (id) =>
+  rest(`simulacoes?id=eq.${id}`, { method: "DELETE" });

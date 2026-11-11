@@ -15,10 +15,12 @@ import * as etapa from "./pages/etapa.js";
 import * as fornecedores from "./tools/fornecedores.js";
 import * as freteiros from "./tools/freteiros.js";
 import * as envio from "./tools/envio.js";
+import * as calculadora from "./tools/calculadora.js";
 import * as lojaParceira from "./pages/lojaParceira.js";
 
 // Rotas de ferramenta: [chave da ferramenta, módulo, nome].
 const FERRAMENTAS_ROTA = {
+  "#/app/calculadora": ["calculadora", calculadora, "Calculadora"],
   "#/app/fornecedores": ["fornecedores", fornecedores, "Fornecedores"],
   "#/app/freteiros": ["freteiros", freteiros, "Freteiros"],
   "#/app/envio": ["envio", envio, "Envio no Brasil"],
