@@ -50,15 +50,15 @@ export async function montar(ctx, app, view) {
           <span class="muted">Não se aplica ao caminho Brasil.</span>
           <button class="link" data-acao="mudar-caminho">Mudar para o caminho Paraguai</button></span></div>`;
     }
-    // bloqueada
-    return `<div class="trilha-item bloq">
-      <span class="trilha-dot">${ic("lock", 16)}</span>
-      <span class="trilha-corpo"><b>${e.numero}. ${e.titulo}</b>
-        <span class="muted">Conclua a etapa ${e.numero - 1} para liberar.</span></span></div>`;
+    // pendente (ainda não feita) — aberta para começar quando quiser
+    return `<a class="trilha-item" href="#/app/trilha/${e.numero}">
+      <span class="trilha-dot">${e.numero}</span>
+      <span class="trilha-corpo"><b>${e.numero}. ${e.titulo}</b><span class="muted">${e.descricao}</span></span>
+      <span class="trilha-acao">${meta}<span class="link">Começar</span></span></a>`;
   }).join("");
 
   view.innerHTML = `<h1>Sua trilha</h1>
-    <p class="sub">${TOTAL_ETAPAS} etapas em sequência. Conclua uma para liberar a próxima.</p>
+    <p class="sub">${TOTAL_ETAPAS} etapas curtas. Faça no seu ritmo e marque o que concluir — nada fica bloqueado.</p>
     <div class="trilha mt-4">${linhas}</div>`;
 
   view.onclick = async (ev) => {

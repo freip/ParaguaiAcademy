@@ -71,7 +71,8 @@ export async function montar(ctx, app, container, opts = {}) {
   function renderShell() {
     const atualizado = todos.reduce((m, f) => (f.atualizado_em && f.atualizado_em > m ? f.atualizado_em : m), "");
     container.innerHTML = `
-      ${opts.embutido ? "" : `<h1>Fornecedores</h1><p class="sub">Lojas verificadas, filtradas pelo seu nicho.</p>`}
+      ${opts.embutido ? "" : `<h1>Fornecedores</h1><p class="sub">Lojas verificadas, filtradas pelo seu nicho.</p>
+        <p class="dica mt-2">Dica: a aula sobre fornecedores está na <a class="link" href="#/app/trilha/2">etapa 2 da trilha</a>.</p>`}
       <div class="abas mt-3">
         <button class="aba${estado.aba === "PY" ? " on" : ""}" data-aba="PY">Paraguai (${contar("PY")})</button>
         <button class="aba${estado.aba === "BR" ? " on" : ""}" data-aba="BR">Brasil (${contar("BR")})</button>

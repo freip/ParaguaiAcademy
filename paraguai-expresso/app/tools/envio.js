@@ -49,7 +49,8 @@ export async function montar(ctx, app, container, opts = {}) {
     `<div class="mini-card"><span class="num">${i + 1}</span><span>${esc(t)}</span></div>`).join("");
 
   container.innerHTML = `
-    ${opts.embutido ? "" : `<h1>Envio no Brasil</h1>`}
+    ${opts.embutido ? "" : `<h1>Envio no Brasil</h1>
+      <p class="dica">Dica: a aula sobre envio está na <a class="link" href="#/app/trilha/7">etapa 7 da trilha</a>.</p>`}
     <p class="sub">Gere a etiqueta na SuperFrete e receba em casa.</p>
     <a class="btn mt-3" target="_blank" rel="noopener" href="${esc(urlSuper)}">${ic("send", 16)} Abrir SuperFrete</a>
 

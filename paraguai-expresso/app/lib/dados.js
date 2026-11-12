@@ -34,6 +34,8 @@ export const marcarChecklist = (etapa, item, valor) =>
 
 export const concluirEtapa = (etapa) => rpc("concluir_etapa", { p_etapa: etapa });
 
+export const reabrirEtapa = (etapa) => rpc("reabrir_etapa", { p_etapa: etapa });
+
 export const definirCaminho = (caminho) => rpc("definir_caminho", { p_caminho: caminho });
 
 export const escolherNichoPrincipal = (nicho) =>

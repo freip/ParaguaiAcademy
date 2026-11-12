@@ -53,7 +53,8 @@ export async function montar(ctx, app, container, opts = {}) {
 
   function render() {
     container.innerHTML = `
-      ${opts.embutido ? "" : `<h1>Freteiros</h1><p class="sub">Quem traz sua mercadoria do Paraguai até o Brasil.</p>`}
+      ${opts.embutido ? "" : `<h1>Freteiros</h1><p class="sub">Quem traz sua mercadoria do Paraguai até o Brasil.</p>
+        <p class="dica mt-2">Dica: a aula sobre freteiros está na <a class="link" href="#/app/trilha/5">etapa 5 da trilha</a>.</p>`}
       <div class="row-between mt-3">
         <div class="chips">${chips()}</div>
         <button class="link" data-acao="ver-todos">${estado.verTodos ? "Ver só meu nicho" : "Ver todos os preços"}</button>

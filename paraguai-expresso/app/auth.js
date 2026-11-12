@@ -67,11 +67,11 @@ export const statusEtapa = (ctx, n) =>
 export const etapaAtual = (ctx) =>
   ctx?.progresso?.find((p) => p.status === "atual")?.etapa || null;
 
-// Uma ferramenta libera quando a etapa dela já foi aberta (atual ou concluída).
-export const ferramentaLiberada = (ctx, etapaNecessaria) => {
-  const st = statusEtapa(ctx, etapaNecessaria);
-  return st === "atual" || st === "concluida";
-};
+// Todas as ferramentas ficam sempre liberadas (nada é bloqueado). Mantida a
+// assinatura porque é usada em vários lugares.
+export const ferramentaLiberada = () => true;
+
+export const etapaConcluida = (ctx, n) => statusEtapa(ctx, n) === "concluida";
 
 // Certificado libera quando nenhuma etapa aplicável está pendente.
 export const trilhaConcluida = (ctx) =>

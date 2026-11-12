@@ -12,7 +12,7 @@ import { skeletonLista, erro, toast } from "../lib/dom.js";
 import {
   videosDaEtapa, checklistDaEtapa, assistidosDoUsuario, marcarAssistido,
   desmarcarAssistido, configuracoes, mapaConfig, marcarChecklist, concluirEtapa,
-  definirCaminho, escolherNichoPrincipal,
+  reabrirEtapa, definirCaminho, escolherNichoPrincipal,
 } from "../lib/dados.js";
 import * as VideoSlot from "../components/VideoSlot.js";
 import * as MensagemPronta from "../components/MensagemPronta.js";
@@ -39,12 +39,7 @@ export async function montar(ctx, app, view, numero) {
   const status = statusEtapa(ctx, numero);
   const voltar = `<a class="link" href="#/app/trilha">${ic("map", 15)} Voltar à trilha</a>`;
 
-  // Guardas de acesso por URL direta
-  if (status === "bloqueada") {
-    view.innerHTML = `${voltar}<h1 class="mt-3">Etapa ${numero}</h1>
-      <div class="card mt-4"><span class="aviso">Conclua a etapa ${numero - 1} para liberar esta.</span></div>`;
-    view.onclick = null; return;
-  }
+  // Etapas do caminho Brasil que não se aplicam (travessia e nota).
   if (status === "nao_se_aplica") {
     view.innerHTML = `${voltar}<h1 class="mt-3">Etapa ${numero}</h1>
       <div class="card mt-4"><span class="aviso">Esta etapa não se aplica ao caminho Brasil.</span>
@@ -71,7 +66,7 @@ export async function montar(ctx, app, view, numero) {
 
   const prog = ctx.progresso.find((p) => p.etapa === numero) || { checklist: {} };
   const estado = { ...(prog.checklist || {}) };
-  const soLeitura = status !== "atual";
+  const concluida = status === "concluida";
   const admin = ctx.perfil?.papel === "admin";
   const caminho = ctx.perfil?.caminho || "paraguai";
   const mensagens = (conteudo.mensagens || []).filter((m) => !m.caminho || m.caminho === caminho);
@@ -88,7 +83,7 @@ export async function montar(ctx, app, view, numero) {
     ${mensagens.length ? `<div class="mt-4"><h2>Mensagens prontas</h2>
       <p class="sub">Copie, troque o que está entre [colchetes] e envie.</p>
       ${mensagens.map((m, i) => MensagemPronta.html(m, i, {})).join("")}</div>` : ""}
-    <div id="bloco-checklist" class="mt-4">${Checklist.html(defsChecklist, estado, soLeitura)}</div>
+    <div id="bloco-checklist" class="mt-4">${Checklist.html(defsChecklist, estado, { concluida })}</div>
     ${navegacao(ctx, numero)}`;
 
   // Monta as ferramentas embutidas (mesmo componente da página)
@@ -103,7 +98,7 @@ export async function montar(ctx, app, view, numero) {
 
   const renderChecklist = () => {
     const c = el("bloco-checklist");
-    if (c) c.innerHTML = Checklist.html(defsChecklist, estado, soLeitura);
+    if (c) c.innerHTML = Checklist.html(defsChecklist, estado, { concluida });
   };
 
   view.onkeydown = (ev) => {
@@ -142,10 +137,17 @@ export async function montar(ctx, app, view, numero) {
       try {
         await concluirEtapa(numero);
         await app.recarregar();
-        const prox = etapaAtual(app.ctx());
-        if (prox) { toast(`Etapa ${prox} liberada`); location.hash = `#/app/trilha/${prox}`; }
-        else { toast("Você concluiu a trilha"); location.hash = "#/app/trilha"; }
-      } catch (e) { toast(e.message); alvo.disabled = false; alvo.textContent = "Concluí esta etapa"; }
+        toast("Etapa concluída");
+        const prox = proximaNavegavel(app.ctx(), numero);
+        if (prox) location.hash = `#/app/trilha/${prox}`;
+        else await app.atualizar();
+      } catch (e) { toast(e.message); alvo.disabled = false; alvo.textContent = "Marcar etapa como concluída"; }
+      return;
+    }
+
+    if (acao === "reabrir") {
+      try { await reabrirEtapa(numero); await app.atualizar(); toast("Etapa reaberta"); }
+      catch (e) { toast(e.message); }
       return;
     }
 
@@ -253,10 +255,9 @@ function cardMentoria(config) {
 function navegacao(ctx, numero) {
   const prev = anteriorNavegavel(ctx, numero);
   const next = proximaNavegavel(ctx, numero);
-  const nextBloq = !next || statusEtapa(ctx, next) === "bloqueada";
   return `<div class="row-between mt-4">
     ${prev ? `<a class="btn plain" href="#/app/trilha/${prev}">Etapa anterior</a>` : "<span></span>"}
-    ${!nextBloq ? `<a class="btn plain" href="#/app/trilha/${next}">Próxima etapa</a>`
+    ${next ? `<a class="btn plain" href="#/app/trilha/${next}">Próxima etapa</a>`
       : `<button class="btn plain" disabled>Próxima etapa</button>`}
   </div>`;
 }

@@ -101,7 +101,8 @@ export async function montar(ctx, app, container, opts = {}) {
 
   async function renderShell() {
     container.innerHTML = `
-      ${opts.embutido ? "" : `<h1>Calculadora</h1><p class="sub">Descubra o custo real e por quanto revender.</p>`}
+      ${opts.embutido ? "" : `<h1>Calculadora</h1><p class="sub">Descubra o custo real e por quanto revender.</p>
+        <p class="dica mt-2">Dica: a aula de como usar a calculadora está na <a class="link" href="#/app/trilha/3">etapa 3 da trilha</a>.</p>`}
       <div class="calc-grid mt-3">
         <div class="calc-left">
           <div class="card">
