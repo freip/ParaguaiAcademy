@@ -57,10 +57,10 @@ export const lojaDosSocios = () =>
   rest("fornecedores?select=*&loja_dos_socios=is.true&ativo=is.true&limit=1");
 
 // ---------- Calculadora (Fase 7) ----------
-export function buscarProdutos(nicho, termo) {
-  // Produtos com preço escondido na origem (oculto) não aparecem na busca.
-  let q = `produtos?select=*,lojas(nome,site,whatsapp,minimo_usd)&oculto=is.false&order=em_estoque.desc,nome.asc&limit=40`;
-  if (nicho) q += `&nicho=eq.${encodeURIComponent(nicho)}`;
+// Mostra todos os produtos (sem filtro de nicho). Traz poucos por vez — o
+// aluno vai digitando para filtrar. Produtos ocultos não aparecem.
+export function buscarProdutos(termo) {
+  let q = `produtos?select=*,lojas(nome,site,whatsapp,minimo_usd)&oculto=is.false&order=em_estoque.desc,nome.asc&limit=5`;
   const t = (termo || "").trim();
   if (t) {
     const e = encodeURIComponent(t);

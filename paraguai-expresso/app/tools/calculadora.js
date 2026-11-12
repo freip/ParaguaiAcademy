@@ -92,7 +92,7 @@ export async function montar(ctx, app, container, opts = {}) {
 
   // ----- busca de produtos -----
   async function carregarProdutos() {
-    try { estado.produtos = (await buscarProdutos(estado.nicho, estado.busca)) || []; }
+    try { estado.produtos = (await buscarProdutos(estado.busca)) || []; }
     catch { estado.produtos = []; }
   }
 
@@ -107,11 +107,9 @@ export async function montar(ctx, app, container, opts = {}) {
         <div class="calc-left">
           <div class="card">
             <h2>Escolha os produtos</h2>
-            <div class="chips mt-2">${ctx.nichos.map((s) =>
-              `<button class="chip-btn${estado.nicho === s ? " on" : ""}" data-nicho="${esc(s)}">${esc(nomeNicho(ctx, s))}</button>`).join("")}</div>
+            <input class="busca mt-2" id="busca-prod" placeholder="Buscar por nome, marca ou SKU" value="${esc(estado.busca)}">
             <p class="muted mt-2" id="prod-info-topo" style="font-size:13px"></p>
-            <input class="busca" id="busca-prod" placeholder="Buscar por nome, marca ou SKU" value="${esc(estado.busca)}">
-            <span class="aviso mt-2">Preços de vitrine das lojas. Confirme valor e estoque antes de comprar.</span>
+            <span class="aviso">Preços de vitrine das lojas. Confirme valor e estoque antes de comprar.</span>
             <div id="lista-produtos" class="mt-3"></div>
             <button class="btn plain sm mt-3" data-acao="add-manual">+ Adicionar produto manualmente</button>
           </div>
@@ -135,7 +133,9 @@ export async function montar(ctx, app, container, opts = {}) {
     const info = el("prod-info-topo");
     if (info) {
       const maxA = p.reduce((m, x) => (x.atualizado_em && x.atualizado_em > m ? x.atualizado_em : m), "");
-      info.textContent = p.length ? `${p.length} produtos${maxA ? ` · atualizada em ${data(maxA)} às 12h` : ""}` : "";
+      info.textContent = p.length
+        ? `Mostrando ${p.length} · digite para filtrar${maxA ? ` · atualizada em ${data(maxA)} às 12h` : ""}`
+        : "";
     }
     if (!p.length) { alvo.innerHTML = vazio("Nenhum produto encontrado. Use 'Adicionar manualmente'."); return; }
     const cot = estado.cotacao;
@@ -410,9 +410,8 @@ export async function montar(ctx, app, container, opts = {}) {
   };
 
   container.onclick = async (ev) => {
-    const b = ev.target.closest("[data-acao],[data-nicho]"); if (!b) return;
+    const b = ev.target.closest("[data-acao]"); if (!b) return;
     const ac = b.dataset.acao;
-    if (b.dataset.nicho) { estado.nicho = b.dataset.nicho; await carregarProdutos(); renderShell(); return; }
     if (ac === "add") { const prod = estado.produtos.find((p) => String(p.id) === b.dataset.pid); if (prod) addProduto(prod); return; }
     if (ac === "add-manual") {
       const nome = prompt("Nome do produto:"); if (!nome) return;
