@@ -1,0 +1,161 @@
+/* Layout e componentes. Projetado primeiro para celular (360–430px);
+   a barra lateral aparece só no desktop. Cores vêm de tokens.css. */
+
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--text);
+  font:16px/1.5 var(--font);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img{max-width:100%;display:block}
+b,strong{color:var(--ink);font-weight:700}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- Logo ---------- */
+.brand{display:inline-flex;align-items:center;text-decoration:none}
+.logo{display:inline-flex;align-items:center;gap:10px}
+.logo-png{height:34px;width:auto}
+.logo-grande .logo-png{height:42px}
+.logo-fallback{display:inline-flex;align-items:center;gap:9px}
+.logo-chevrons{height:26px;width:auto;flex:none}
+.logo-grande .logo-chevrons{height:34px}
+.logo-wm{display:flex;flex-direction:column;line-height:1}
+.logo-wm b{color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px}
+.logo-grande .logo-wm b{font-size:19px}
+.logo-wm small{color:var(--accent);font-size:8px;font-weight:700;letter-spacing:3px;margin-top:3px}
+.logo-grande .logo-wm small{font-size:10px;letter-spacing:4px}
+
+/* ---------- Shell ---------- */
+.shell{display:flex;min-height:100%}
+.main{flex:1;min-width:0;max-width:1280px;padding:16px 16px calc(var(--bottomnav-h) + 24px)}
+@media(min-width:900px){ .main{padding:40px 40px 64px} }
+
+/* ---------- Barra de topo (celular) ---------- */
+.topbar{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;background:var(--sidebar)
+}
+.topbar .sp{margin-left:auto}
+@media(min-width:900px){ .topbar{display:none} }
+
+/* ---------- Barra lateral (desktop) ---------- */
+.sidebar{display:none}
+@media(min-width:900px){
+  .sidebar{
+    display:flex;flex-direction:column;width:var(--sidebar-w);flex:none;
+    background:var(--sidebar);border-right:1px solid var(--line);
+    padding:18px 14px;position:sticky;top:0;height:100vh
+  }
+}
+.sidebar .brand{padding:4px 6px 16px}
+.side-nav{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
+
+.profile{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:12px;margin-bottom:14px}
+.avatar{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--accent);color:var(--on-accent);font-weight:800;font-size:15px}
+.avatar.sm{width:36px;height:36px;font-size:13px}
+.profile-info{min-width:0}
+.profile .nome{display:block;font-size:14px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nichos{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.nicho-chip{background:var(--ok-soft);color:var(--ok);font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill)}
+
+.notif{display:inline-grid;place-items:center;width:42px;height:42px;border:1px solid var(--line);
+  border-radius:var(--r);background:var(--panel);color:var(--mute)}
+
+/* itens de navegação (compartilhado) */
+.nav-group-label{color:var(--mute);font-size:11px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;padding:16px 10px 6px;opacity:.75}
+.nav{display:flex;align-items:center;gap:12px;width:100%;padding:9px 10px;border-radius:var(--r);
+  color:var(--text);font-weight:500;text-align:left;position:relative}
+.nav:hover{background:var(--panel-3)}
+.nav .ib{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:11px;
+  background:var(--panel-2);color:var(--mute)}
+.nav.ativo{color:var(--ink);background:var(--accent-soft);font-weight:600}
+.nav.ativo::before{content:"";position:absolute;left:-14px;top:7px;bottom:7px;width:4px;
+  border-radius:0 4px 4px 0;background:var(--accent)}
+.nav.ativo .ib{background:var(--accent);color:var(--on-accent)}
+.nav.travado{color:var(--mute);cursor:not-allowed;opacity:.5}
+.nav.travado .ib{background:transparent;border:1px solid var(--line)}
+.nav .lock-tip{margin-left:auto;font-size:11px;color:var(--mute);font-weight:600}
+.nav .badge{margin-left:auto;font-size:11px;color:var(--accent);font-weight:700}
+
+.btn-comunidade{display:block;text-align:center;margin-top:10px;background:var(--accent);
+  color:var(--on-accent);font-weight:800;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;
+  padding:14px;border-radius:var(--r);box-shadow:var(--shadow-accent)}
+
+/* ---------- Menu inferior (celular) ---------- */
+.bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;height:var(--bottomnav-h);
+  background:var(--sidebar);border-top:1px solid var(--line)}
+.bottomnav a,.bottomnav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;min-height:var(--touch);color:var(--mute);font-size:11px;font-weight:600}
+.bottomnav .ativo{color:var(--accent)}
+@media(min-width:900px){ .bottomnav{display:none} }
+
+/* Folha "Mais" (celular) */
+.sheet-bg{position:fixed;inset:0;background:#000a;z-index:40;display:none}
+.sheet-bg.on{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--sidebar);border-top:1px solid var(--line);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;padding:14px 14px calc(var(--bottomnav-h) + 14px);
+  transform:translateY(100%);transition:transform .2s;max-height:80vh;overflow:auto}
+.sheet.on{transform:translateY(0)}
+@media(min-width:900px){ .sheet,.sheet-bg{display:none!important} }
+
+/* ---------- Cartões e botões ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.card + .card{margin-top:16px}
+h1{font-size:28px;line-height:1.15;font-weight:700;color:var(--ink)}
+@media(min-width:900px){ h1{font-size:34px} }
+h2{font-size:20px;font-weight:700;color:var(--ink)}
+.sub{color:var(--mute);margin-top:6px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--touch);
+  padding:12px 22px;border-radius:var(--r);background:var(--accent);color:var(--on-accent);
+  font-weight:700;box-shadow:var(--shadow-accent)}
+.btn:hover{filter:brightness(1.05)}
+.btn.block{display:flex;width:100%}
+.btn.ghost{background:transparent;border:1.5px solid rgba(220,228,245,.3);color:var(--ink);box-shadow:none}
+.btn.ok{background:var(--ok);color:#fff;box-shadow:none}
+.btn.plain{background:var(--panel-2);color:var(--text);box-shadow:none;border:1px solid var(--line)}
+.btn[disabled]{opacity:.45;cursor:default;box-shadow:none}
+.link{color:var(--accent);text-decoration:none;font-weight:600}
+.link:hover{text-decoration:underline}
+
+/* ---------- Estados: carregando / vazio / erro ---------- */
+.skeleton{background:linear-gradient(90deg,var(--panel) 25%,var(--panel-3) 37%,var(--panel) 63%);
+  background-size:400% 100%;animation:sk 1.4s ease infinite;border-radius:var(--r)}
+@keyframes sk{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.sk-line{height:14px;margin:8px 0}
+.sk-card{height:120px}
+.estado{border:1px dashed var(--line);border-radius:var(--r-lg);padding:28px 20px;text-align:center;color:var(--mute)}
+.estado.erro{border-color:var(--err-soft);color:var(--err)}
+
+/* avisos */
+.aviso{display:block;background:var(--warn-soft);color:var(--warn);border-radius:var(--r);padding:10px 14px;font-size:14px}
+.dica{display:inline-block;background:var(--accent-soft);color:var(--text);border-left:3px solid var(--accent);
+  border-radius:0 var(--r) var(--r) 0;padding:8px 12px;font-size:13px}
+
+/* ---------- Login ---------- */
+.auth-wrap{min-height:100%;display:grid;place-items:center;padding:24px 16px}
+.auth-card{width:100%;max-width:400px}
+.auth-logo{display:flex;justify-content:center;margin-bottom:18px}
+.auth-card h1{font-size:24px}
+.field{margin:14px 0}
+.field label{display:block;font-weight:600;font-size:14px;margin-bottom:6px;color:var(--text)}
+.field input{width:100%;background:var(--panel-2);border:1px solid var(--line-2);color:var(--ink);
+  border-radius:var(--r);padding:13px 14px;font:inherit;min-height:var(--touch)}
+.field input:focus{outline:2px solid var(--accent);border-color:transparent}
+.form-msg{min-height:20px;margin-top:10px;font-size:14px}
+.form-msg.erro{color:var(--err)}
+.form-msg.ok{color:var(--ok)}
+
+/* util */
+.hide{display:none!important}
+.row-between{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.muted{color:var(--mute)}
+.mt-2{margin-top:10px}.mt-3{margin-top:16px}.mt-4{margin-top:22px}
