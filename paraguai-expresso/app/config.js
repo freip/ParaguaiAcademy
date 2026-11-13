@@ -12,6 +12,10 @@ export const GRUPO_COMUNIDADE = "https://chat.whatsapp.com/CktozyU7vE9EQXjSPAumU
 // Nome usado quando o perfil não tem nome preenchido.
 export const NOME_PADRAO = "Importador";
 
+// Página de vendas (arquivo próprio, fora da SPA). É para onde vai quem não
+// está logado ou ainda não tem acesso pago.
+export const PAGINA_VENDAS = "/plataforma/";
+
 // ---------- Planos ----------
 // Rota da página que explica os dois planos e leva ao upgrade.
 export const ROTA_PLANO = "#/app/plano";

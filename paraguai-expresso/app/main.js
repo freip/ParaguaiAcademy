@@ -4,8 +4,8 @@ import { sessaoAtiva } from "./lib/supabase.js";
 import {
   carregarContexto, precisaTrocarSenha, temAcesso, sair as logout,
 } from "./auth.js";
+import { PAGINA_VENDAS } from "./config.js";
 import { montarNav } from "./nav.js";
-import * as publica from "./pages/publica.js";
 import * as login from "./pages/login.js";
 import * as trocarSenha from "./pages/trocarSenha.js";
 import * as placeholders from "./pages/placeholders.js";
@@ -62,8 +62,11 @@ const app = {
   },
   async recarregar() { try { ctx = await carregarContexto(); } catch {} },
   async atualizar() { await this.recarregar(); render(); },
-  sair() { logout(); ctx = null; location.hash = "#/aula-gratis"; },
+  sair() { logout(); ctx = null; location.replace(PAGINA_VENDAS); },
 };
+
+// A página de vendas é um arquivo próprio (/plataforma), fora da SPA.
+const irParaVendas = () => { location.replace(PAGINA_VENDAS); };
 
 function telaSimples(html) {
   shellMontado = false;
@@ -91,13 +94,8 @@ function render() {
 
   if (base.startsWith("#/sair")) { app.sair(); return; }
 
-  // Públicas
-  if (base === "#/" || base === "#/aula-gratis") {
-    shellMontado = false;
-    root().innerHTML = '<div id="pub"></div>';
-    publica.montar(document.getElementById("pub"));
-    return;
-  }
+  // Públicas: quem não está logado vai para a página de vendas.
+  if (base === "#/" || base === "#/aula-gratis") { irParaVendas(); return; }
   if (base === "#/entrar") {
     if (ctx) { location.hash = "#/app"; return; }
     telaSimples(login.render());
@@ -116,7 +114,7 @@ function render() {
     if (!ctxCarregado) return;                         // ainda restaurando a sessão
     if (!ctx) { location.hash = "#/entrar"; return; }
     if (precisaTrocarSenha(ctx)) { location.hash = "#/trocar-senha"; return; }
-    if (!temAcesso(ctx)) { location.hash = "#/aula-gratis"; return; } // logado sem acesso pago
+    if (!temAcesso(ctx)) { irParaVendas(); return; }   // logado, mas sem acesso pago
     montarShell();
     montarNav(ctx);
     const view = document.getElementById("view");
@@ -129,9 +127,7 @@ function render() {
     return;
   }
 
-  shellMontado = false;
-  root().innerHTML = '<div id="pub"></div>';
-  publica.montar(document.getElementById("pub"));
+  irParaVendas();
 }
 
 async function boot() {
