@@ -41,7 +41,10 @@ ul,ol{list-style:none;padding:0}
 .dentro{max-width:var(--max);margin:0 auto;position:relative}
 .escura{background:var(--azul-escuro);color:var(--texto-claro-2)}
 .mais-escura{background:var(--azul-mais-escuro);color:var(--texto-claro-2)}
-.escura h2,.escura h3,.escura b,.escura strong,.mais-escura h2,.mais-escura h3{color:var(--texto-claro)}
+.fechamento-bg{background:var(--azul);color:var(--texto-claro-2)}
+.escura h2,.escura h3,.escura b,.escura strong,
+.mais-escura h2,.mais-escura h3,
+.fechamento-bg h2,.fechamento-bg h3{color:var(--texto-claro)}
 .branca-bg{background:var(--branco)}
 .clara-bg{background:var(--fundo-claro)}
 
@@ -49,22 +52,18 @@ h1,h2,h3{line-height:1.18;color:var(--texto);font-weight:800;letter-spacing:-.01
 h2{font-size:clamp(25px,4vw,36px)}
 h3{font-size:18px;font-weight:700}
 .escura h1{color:var(--texto-claro)}
-.rotulo{display:block;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;
-  color:var(--azul);margin-bottom:10px}
-.escura .rotulo{color:var(--amarelo)}
 .sub{font-size:16px;color:var(--texto-corpo);max-width:60ch;margin-top:12px}
-.escura .sub,.mais-escura .sub{color:var(--texto-claro-3)}
+.escura .sub,.mais-escura .sub,.fechamento-bg .sub{color:var(--texto-claro-3)}
 .am{color:var(--amarelo)}
 .ve{color:var(--verde)}
 
 /* ---------- Botão (único uso do amarelo fora da barra de prazo) ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  padding:16px 30px;border-radius:var(--r-pill);font-weight:700;font-size:16px;
-  background:var(--amarelo);color:var(--azul-escuro);white-space:nowrap;text-align:center}
+  padding:16px 30px;border-radius:14px;font-weight:700;font-size:16px;
+  background:var(--amarelo);color:var(--azul-escuro);white-space:nowrap;text-align:center;
+  box-shadow:0 3px 0 #B98800,0 14px 30px -12px rgba(244,180,0,.7)}
 .btn:hover{filter:brightness(.97)}
 .btn.grande{padding:18px 36px;font-size:17px;width:100%;max-width:420px}
-.btn.fantasma{background:transparent;border:1.5px solid rgba(220,228,245,.34);color:var(--texto-claro);
-  padding:9px 18px;font-size:13px;font-weight:600}
 .link-claro{color:var(--texto-claro);text-decoration:underline;text-underline-offset:3px;font-weight:600}
 
 /* ---------- Cartão plano (sem sombra) ---------- */
@@ -88,15 +87,19 @@ h3{font-size:18px;font-weight:700}
 .marca-txt b{color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px}
 .marca-txt small{color:var(--amarelo);font-size:8px;font-weight:700;letter-spacing:3px;margin-top:3px}
 
-/* ---------- Herói ---------- */
+/* ---------- Herói ----------
+   Foto de fundo via variável CSS (plataforma/vendas.js lê conteudo.js e
+   define --foto-topo). Sem a variável, background-image cai em "none" e só
+   sobra a cor sólida de baixo — sem precisar de onerror. */
 .heroi{position:relative;background:var(--azul-escuro);overflow:hidden}
-.heroi-fundo{position:absolute;inset:0;z-index:0;overflow:hidden}
-.heroi-fundo img{position:absolute;right:0;top:0;height:100%;width:62%;object-fit:cover;
-  filter:blur(9px) saturate(1.05);opacity:.5}
-.heroi-fundo::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(90deg,var(--azul-escuro) 0%,var(--azul-escuro) 32%,rgba(10,28,74,.2) 78%)}
-@media(max-width:820px){.heroi-fundo img{width:100%;opacity:.3}
-  .heroi-fundo::after{background:linear-gradient(180deg,var(--azul-escuro) 0%,rgba(10,28,74,.55) 55%,var(--azul-escuro) 100%)}}
+.heroi::before{content:"";position:absolute;top:0;bottom:0;right:0;width:64%;
+  background-image:var(--foto-topo,none);background-position:right 58%;background-size:cover;
+  background-repeat:no-repeat;opacity:.8;filter:blur(5px);transform:scale(1.04)}
+.heroi::after{content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,#0A1C4A 0%,#0A1C4A 37%,rgba(10,28,74,.74) 62%,rgba(10,28,74,.40) 100%),
+    linear-gradient(0deg,#0A1C4A 0%,rgba(10,28,74,0) 30%)}
+@media(max-width:820px){.heroi::before{width:100%;opacity:.45}}
 
 .heroi-corpo{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:30px 20px 48px;
   display:flex;flex-direction:column;gap:22px}
@@ -181,12 +184,12 @@ h3{font-size:18px;font-weight:700}
 .recibo-ganho span{font-size:13px;color:var(--texto-corpo)}
 .recibo-obs{font-size:12px;color:var(--texto-corpo);margin-top:14px}
 
-.conta-passos{display:flex;flex-direction:column;gap:18px}
-.conta-passos li{display:flex;gap:14px}
-.conta-passos .n{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
-  border:1.5px solid var(--amarelo);color:var(--amarelo);font-weight:700;font-size:13px}
+.conta-passos{display:flex;flex-direction:column}
+.conta-passos li{display:flex;gap:14px;padding:16px 0;border-top:1px solid var(--linha-escura)}
+.conta-passos li:first-child{border-top:0}
+.conta-passos .n{flex:none;color:var(--amarelo);font-weight:800;font-size:17px;min-width:20px}
 .conta-passos b{display:block;font-size:15.5px;color:var(--texto-claro)}
-.conta-headline{font-size:clamp(22px,3.2vw,30px);color:#fff;margin-bottom:10px}
+.conta-headline{font-size:44px;font-weight:800;color:#fff;line-height:1.18;max-width:9em;margin-bottom:14px}
 .conta-lead{color:var(--texto-claro-2);font-size:15.5px;margin-bottom:26px}
 
 /* ---------- Caminho em 8 etapas ---------- */
@@ -195,16 +198,16 @@ h3{font-size:18px;font-weight:700}
   padding:8px 16px;border-radius:var(--r-pill)}
 .pilula.verde{background:var(--verde)}
 .caminho-tracado{flex:1;height:0;border-top:2px dashed var(--amarelo);position:relative}
-.caminho-tracado .ic{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  background:var(--fundo-claro);color:var(--azul);padding:0 6px}
-.etapas{display:flex;flex-direction:column;border-top:1px solid var(--linha)}
+.caminho-tracado .caminhao{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  background:var(--fundo-claro);padding:0 8px;display:flex;align-items:center}
+.etapas{display:flex;flex-direction:column;border-top:2px solid var(--azul-escuro)}
 @media(min-width:720px){.etapas{display:grid;grid-template-columns:repeat(4,1fr)}}
 @media(min-width:1180px){.etapas{grid-template-columns:repeat(8,1fr)}}
 .etapa{padding:20px 16px 20px 0;border-bottom:1px solid var(--linha)}
 @media(min-width:720px){.etapa{border-right:1px solid var(--linha);border-bottom:0;padding-right:18px}
   .etapa:nth-child(4n){border-right:0}}
 @media(min-width:1180px){.etapa:nth-child(4n){border-right:1px solid var(--linha)}.etapa:nth-child(8n){border-right:0}}
-.etapa b.num{display:block;font-size:20px;color:var(--azul);margin-bottom:6px}
+.etapa b.num{display:block;font-size:30px;font-weight:800;color:var(--azul);margin-bottom:6px}
 .etapa h3{font-size:14.5px}
 .etapa p{font-size:13px;color:var(--texto-corpo);margin-top:5px}
 .etapa .ferramenta{display:block;margin-top:9px;font-size:12.5px;font-weight:700;color:var(--verde-escuro)}
@@ -261,9 +264,10 @@ h3{font-size:18px;font-weight:700}
 .oferta-card{background:var(--branco);color:var(--texto);border-radius:var(--r-lg);padding:30px}
 .oferta-card .ancora-preco{font-size:15px;color:var(--texto-corpo)}
 .oferta-card .ancora-preco s{color:var(--texto-corpo)}
-.oferta-preco{display:flex;align-items:baseline;gap:6px;margin:10px 0 2px}
-.oferta-preco .moeda{font-size:22px;font-weight:800;color:var(--texto-corpo)}
-.oferta-preco .valor{font-size:clamp(46px,7vw,58px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.oferta-preco{display:flex;align-items:baseline;gap:8px;margin:10px 0 2px}
+.oferta-preco .moeda{font-size:30px;font-weight:800;color:var(--azul)}
+.oferta-preco .valor{font-size:84px;font-weight:800;color:var(--azul);letter-spacing:-.03em;line-height:1}
+@media(max-width:759px){.oferta-preco .valor{font-size:68px}}
 .oferta-card .rodape-preco{font-size:14px;color:var(--texto-corpo)}
 .oferta-card .btn{width:100%;margin-top:18px}
 .oferta-pagamentos{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
@@ -289,8 +293,12 @@ h3{font-size:18px;font-weight:700}
 .nao-serve .ic{color:#B23A3A}
 
 /* ---------- FAQ ---------- */
-.faq-lista{margin-top:28px;display:flex;flex-direction:column}
+.faq-grid{display:grid;gap:30px;grid-template-columns:1fr}
+@media(min-width:860px){.faq-grid{grid-template-columns:.9fr 1.5fr;gap:50px;align-items:start}}
+.faq-coluna-esq .sub a{color:var(--azul);font-weight:700;text-decoration:underline}
+.faq-lista{display:flex;flex-direction:column}
 .faq{border-top:1px solid var(--linha)}
+.faq:first-child{border-top:2px solid var(--azul-escuro)}
 .faq:last-child{border-bottom:1px solid var(--linha)}
 .faq summary{padding:18px 4px;font-weight:700;font-size:15.5px;cursor:pointer;list-style:none;
   display:flex;justify-content:space-between;align-items:center;gap:14px}
@@ -300,13 +308,16 @@ h3{font-size:18px;font-weight:700}
 .faq p{padding:0 4px 20px;color:var(--texto-corpo);font-size:14.5px;max-width:70ch}
 .faq p a{color:var(--azul);font-weight:700;text-decoration:underline}
 
-/* ---------- Fechamento ---------- */
-.fechamento-grid{display:grid;gap:30px;grid-template-columns:1fr;margin-top:10px;align-items:center}
-@media(min-width:760px){.fechamento-grid{grid-template-columns:.85fr 1.15fr}}
-/* Sem foto (onerror marca a seção): volta a uma coluna, texto ocupa tudo —
-   em vez de deixar metade da seção em branco morto. */
-.fechamento-grid.sem-foto{grid-template-columns:1fr}
-.fechamento-img{width:100%;aspect-ratio:4/3;border-radius:var(--r-lg);object-fit:cover;background:var(--azul-escuro)}
+/* ---------- Fechamento ----------
+   Duas colunas fixas; a foto é uma div com fundo via variável CSS (mesma
+   técnica do herói — sem arquivo ainda, fica só a cor sólida, sem onerror). */
+.fechamento-grid{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:760px){.fechamento-grid{grid-template-columns:1fr 1fr;align-items:stretch}}
+.fechamento-foto{min-height:440px;background-image:var(--foto-fechamento,none);
+  background-size:cover;background-position:30% center;background-color:var(--azul)}
+@media(max-width:759px){.fechamento-foto{min-height:unset;height:200px}}
+.fechamento-texto{padding:40px 8px}
+@media(min-width:760px){.fechamento-texto{padding:48px 0 48px 48px}}
 .fechamento-texto h2{color:#fff;font-size:clamp(26px,4vw,38px)}
 .fechamento-texto .sob-btn{margin-top:16px}
 

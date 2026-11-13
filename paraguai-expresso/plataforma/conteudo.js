@@ -5,11 +5,14 @@
 // página sozinho. Nada aqui é inventado — os números e depoimentos reais
 // entram preenchendo os campos abaixo, nunca direto no HTML.
 export const CONTEUDO = {
-  // Logo e foto de fundo do herói/fechamento. Se o arquivo não existir, a
-  // página cai para o nome em texto (logo) ou para a cor sólida (foto) —
-  // nada quebra.
+  // Logo e as duas fotos da fronteira. Se o arquivo não existir, a página
+  // cai para o nome em texto (logo) ou para a cor sólida (fotos) — nada
+  // quebra. As fotos são lidas via CSS (background-image), não <img>, então
+  // nem precisam de onerror: arquivo ausente = fundo transparente, e a cor
+  // sólida por baixo já resolve.
   logo: "../public/paraguai-academy-logo.png",
-  fronteira: "../public/fronteira.jpg",
+  fronteiraTopo: "../public/fronteira-topo.jpg",
+  fronteiraFechamento: "../public/fronteira-fechamento.jpg",
 
   // Preencha a data (ex.: "1 de dezembro") para a barra de prazo aparecer.
   // Vazio = barra escondida (sem data, não tem prazo de verdade).

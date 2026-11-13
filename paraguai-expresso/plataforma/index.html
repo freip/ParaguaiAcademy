@@ -25,10 +25,6 @@
 
 <!-- =========================== HERÓI =========================== -->
 <header class="heroi">
-  <div class="heroi-fundo" aria-hidden="true">
-    <img id="heroi-foto" alt="" onerror="this.style.display='none'">
-  </div>
-
   <nav class="topo">
     <a class="marca" href="/plataforma" aria-label="Paraguai Academy">
       <img class="marca-logo" id="marca-logo" alt="Paraguai Academy"
@@ -41,7 +37,7 @@
         <span class="marca-txt"><b>PARAGUAI</b><small>ACADEMY</small></span>
       </span>
     </a>
-    <a class="btn fantasma" href="/#/entrar">Já sou aluno</a>
+    <a class="link-claro" href="/#/entrar">Já sou aluno</a>
   </nav>
 
   <div class="heroi-corpo">
@@ -91,7 +87,6 @@
 <!-- =========================== TRÊS MEDOS =========================== -->
 <section class="secao branca-bg">
   <div class="dentro">
-    <span class="rotulo">O que trava quem quer começar</span>
     <h2>Três medos seguram quem quer começar</h2>
 
     <div class="medos">
@@ -122,7 +117,6 @@
 <!-- =========================== A CONTA =========================== -->
 <section class="secao escura">
   <div class="dentro">
-    <span class="rotulo">A conta que muda tudo</span>
     <h2>Um lote de 10 perfumes, do início ao fim</h2>
     <p class="sub">É a conta que a calculadora do curso faz, com o dólar a R$ 5,40.</p>
 
@@ -163,14 +157,18 @@
 <!-- =========================== 8 ETAPAS =========================== -->
 <section class="secao clara-bg">
   <div class="dentro">
-    <span class="rotulo">O que você vai aprender</span>
     <h2>O caminho em 8 etapas, na ordem da compra</h2>
     <p class="sub">Cada etapa tem um vídeo curto e libera uma ferramenta. Dá para ver tudo numa noite.</p>
 
     <div class="caminho-linha">
       <span class="pilula">Loja no Paraguai</span>
       <span class="caminho-tracado">
-        <svg class="ic" width="22" height="22" viewBox="0 0 24 24"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7"/><path d="M5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/><path d="M18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>
+        <svg class="caminhao" width="44" height="30" viewBox="0 0 44 30" aria-hidden="true">
+          <rect x="2" y="8" width="24" height="14" rx="2" fill="#0E2A66"/>
+          <path d="M26 12h7l6 6v4H26z" fill="#F4B400"/>
+          <circle cx="11" cy="25" r="4" fill="#0A1C4A"/>
+          <circle cx="33" cy="25" r="4" fill="#0A1C4A"/>
+        </svg>
       </span>
       <span class="pilula verde">Sua casa</span>
     </div>
@@ -207,7 +205,6 @@
 <!-- =========================== FERRAMENTAS =========================== -->
 <section class="secao branca-bg">
   <div class="dentro">
-    <span class="rotulo">Não é só aula</span>
     <h2>Quatro ferramentas que você abre em toda compra</h2>
 
     <div class="ferramentas-grid">
@@ -266,7 +263,6 @@
 <!-- Some inteira se não houver bio, foto nem nenhum dos três números. -->
 <section class="secao clara-bg" id="secao-mauro" hidden>
   <div class="dentro">
-    <span class="rotulo">Quem ensina é quem compra</span>
     <h2>O Mauro continua comprando</h2>
     <div class="mauro-grid">
       <div id="mauro-foto"></div>
@@ -281,7 +277,6 @@
 <!-- =========================== OFERTA =========================== -->
 <section class="secao escura" id="oferta">
   <div class="dentro">
-    <span class="rotulo">O acesso</span>
     <h2>Tudo para fazer a primeira compra sem errar</h2>
 
     <div class="oferta-grid">
@@ -320,7 +315,6 @@
 <!-- =========================== SERVE / NÃO SERVE =========================== -->
 <section class="secao branca-bg">
   <div class="dentro">
-    <span class="rotulo">Seja honesto consigo</span>
     <h2>Isto serve para você?</h2>
     <div class="serve-grid">
       <div>
@@ -347,9 +341,12 @@
 
 <!-- =========================== FAQ =========================== -->
 <section class="secao clara-bg">
-  <div class="dentro">
-    <span class="rotulo">Antes de comprar</span>
-    <h2>Perguntas que todo mundo faz</h2>
+  <div class="dentro faq-grid">
+    <div class="faq-coluna-esq">
+      <h2>Perguntas que todo mundo faz</h2>
+      <p class="sub">Ficou com outra dúvida? <a id="link-zap-faq2" href="#" target="_blank"
+        rel="noopener">Fale com a equipe no WhatsApp</a></p>
+    </div>
     <div class="faq-lista">
       <details class="faq" open><summary>E se eu não gostar?</summary>
         <p>Você tem 7 dias a partir da compra para pedir o dinheiro de volta, conforme o artigo 49
@@ -382,10 +379,9 @@
 </section>
 
 <!-- =========================== FECHAMENTO =========================== -->
-<section class="secao mais-escura">
-  <div class="dentro fechamento-grid" id="fechamento-grid">
-    <img class="fechamento-img" id="fechamento-foto" alt=""
-      onerror="this.style.display='none';document.getElementById('fechamento-grid').classList.add('sem-foto')">
+<section class="secao fechamento-bg">
+  <div class="dentro fechamento-grid">
+    <div class="fechamento-foto" id="fechamento-foto"></div>
     <div class="fechamento-texto">
       <h2>O próximo lote pode ser o seu.</h2>
       <p class="sub">A diferença entre quem compra errado e quem compra com lucro é uma conta

@@ -27,17 +27,27 @@ const MSG_DUVIDA = "Olá! Vi a página do Paraguai Academy e tenho uma dúvida a
 // antes mesmo da página terminar de carregar imagens.
 // ============================================================
 
-// Logo e foto de fundo: tenta o arquivo; se não existir, cada <img> já tem o
-// onerror certo no HTML (volta para o nome em texto / cor sólida).
-function aplicarImagensDeMarca() {
+// Logo: tenta o arquivo; se não existir, o <img> já tem o onerror certo no
+// HTML (volta para o nome em texto).
+function aplicarLogo() {
   for (const id of ["marca-logo", "marca-logo-pe"]) {
     const img = el(id);
     if (img && CONTEUDO.logo) img.src = CONTEUDO.logo;
   }
-  const heroiFoto = el("heroi-foto");
-  if (heroiFoto && CONTEUDO.fronteira) heroiFoto.src = CONTEUDO.fronteira;
+}
+
+// Fotos da fronteira: viram variável CSS (background-image), lidas pelo
+// herói (::before) e pela div do fechamento. Sem arquivo, a variável não é
+// definida, o CSS cai no "none" e só sobra a cor sólida — sem onerror.
+function aplicarFotosDeFundo() {
+  const heroi = document.querySelector(".heroi");
+  if (heroi && CONTEUDO.fronteiraTopo) {
+    heroi.style.setProperty("--foto-topo", `url("${CONTEUDO.fronteiraTopo}")`);
+  }
   const fechamentoFoto = el("fechamento-foto");
-  if (fechamentoFoto && CONTEUDO.fronteira) fechamentoFoto.src = CONTEUDO.fronteira;
+  if (fechamentoFoto && CONTEUDO.fronteiraFechamento) {
+    fechamentoFoto.style.setProperty("--foto-fechamento", `url("${CONTEUDO.fronteiraFechamento}")`);
+  }
 }
 
 // Barra de prazo: só existe se houver uma data real.
@@ -184,7 +194,7 @@ function aplicarConfig(cfg) {
     if (externo) { b.target = "_blank"; b.rel = "noopener"; }
     if (porZap) b.insertAdjacentHTML("afterbegin", ZAP_SVG);
   }
-  for (const id of ["link-zap-faq1", "link-zap-pe"]) {
+  for (const id of ["link-zap-faq1", "link-zap-faq2", "link-zap-pe"]) {
     const a = el(id);
     if (a) a.href = linkZap(MSG_DUVIDA);
   }
@@ -215,7 +225,8 @@ function rastrear() {
   });
 }
 
-aplicarImagensDeMarca();
+aplicarLogo();
+aplicarFotosDeFundo();
 aplicarPrazo();
 aplicarVideo();
 aplicarProva();
