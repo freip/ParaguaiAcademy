@@ -174,6 +174,7 @@ function aplicarConfig(cfg) {
   txt("cta-hero-valor", vBrl);
   txt("oferta-valor", vBrl.replace(/^R\$\s*/, ""));
   txt("conta-preco", vBrl);
+  txt("fechamento-preco", vBrl);
   txt("barra-valor", vBrl);
   txt("garantia-valor", vBrl);
   txt("prazo-preco", vBrl);
