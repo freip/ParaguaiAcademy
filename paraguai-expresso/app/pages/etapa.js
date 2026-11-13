@@ -4,9 +4,9 @@
 import {
   etapaPorNumero, COMO_FUNCIONA, SINAIS_GOLPE, CHECKLIST_ANTES_PAGAR, LINHA_TEMPO,
 } from "../content/trilha.js";
-import { statusEtapa, etapaAtual, nomeNicho } from "../auth.js";
-import { TOTAL_ETAPAS } from "../config.js";
-import { esc, brl } from "../lib/format.js";
+import { statusEtapa, nomeNicho, ehPro } from "../auth.js";
+import { TOTAL_ETAPAS, ROTA_PLANO } from "../config.js";
+import { esc } from "../lib/format.js";
 import { ic } from "../lib/icons.js";
 import { skeletonLista, erro, toast } from "../lib/dom.js";
 import {
@@ -17,6 +17,7 @@ import {
 import * as VideoSlot from "../components/VideoSlot.js";
 import * as MensagemPronta from "../components/MensagemPronta.js";
 import * as Checklist from "../components/Checklist.js";
+import * as Upgrade from "../components/Upgrade.js";
 import * as fornecedores from "../tools/fornecedores.js";
 import * as freteiros from "../tools/freteiros.js";
 import * as envio from "../tools/envio.js";
@@ -175,7 +176,7 @@ function blocosEspeciais(conteudo, ctx, config) {
   for (const f of conteudo.ferramentas || []) out += f === "nota" ? cardNota() : cardFerramenta(f);
   if (conteudo.checklistAntesPagar) out += cardAntesPagar();
   if (conteudo.linhaTempo) out += cardLinhaTempo();
-  if (conteudo.mentoria) out += cardMentoria(config);
+  if (conteudo.mentoria) out += cardMentoria(config, ctx);
   return out;
 }
 
@@ -199,12 +200,10 @@ const cardLinhaTempo = () =>
     <div class="timeline mt-3">${LINHA_TEMPO.map((p, i) =>
       `<span class="tl-item">${esc(p)}</span>${i < LINHA_TEMPO.length - 1 ? '<span class="tl-seta">→</span>' : ""}`).join("")}</div></div>`;
 
+// Hoje existe um nicho só ("Geral"): nada para escolher, o card não aparece.
+// Fica pronto para voltar se mais de um nicho for liberado no futuro.
 function cardEscolhaNicho(ctx) {
-  if (ctx.nichos.length <= 1) {
-    const slug = ctx.nichos[0];
-    return `<div class="card mt-4"><h2>Seu nicho</h2>
-      <p class="mt-3">Seu nicho: <b>${slug ? esc(nomeNicho(ctx, slug)) : "nenhum liberado"}</b></p></div>`;
-  }
+  if (ctx.nichos.length <= 1) return "";
   const atual = ctx.perfil?.nicho_principal;
   return `<div class="card mt-4"><h2>Escolha seu nicho principal</h2>
     <div class="chips mt-3">${ctx.nichos.map((s) =>
@@ -239,17 +238,18 @@ const cardNota = () =>
     </ul>
     <p class="muted" style="font-size:13px">Confirme os valores e os documentos com a equipe antes da emissão.</p></div>`;
 
-function cardMentoria(config) {
-  const titulo = config.mentoria_titulo || "Mentoria individual com o Mauro";
-  const valor = config.mentoria_valor ? ` Valor: ${brl(+config.mentoria_valor)}.` : "";
-  const whats = (config.mentoria_whatsapp || "").replace(/\D/g, "");
-  const botao = whats
-    ? `<a class="btn ok mt-3" target="_blank" rel="noopener"
-         href="https://wa.me/${whats}?text=${encodeURIComponent("Quero fazer a mentoria individual.")}">
-         Quero a mentoria</a>`
-    : `<p class="muted mt-3">Contato da mentoria em breve.</p>`;
-  return `<div class="card mt-4"><h2>${esc(titulo)}</h2>
-    <p class="mt-3">Quer ajuda individual? Faça uma mentoria com o Mauro.${valor}</p>${botao}</div>`;
+// Mentoria é do plano Pro: o Standard vê o convite para migrar.
+function cardMentoria(config, ctx) {
+  const titulo = config.mentoria_titulo || "Mentoria com o Mauro";
+  if (ehPro(ctx)) {
+    return `<div class="card mt-4"><h2>${esc(titulo)} ${Upgrade.tagPro()}</h2>
+      <p class="mt-3">Chamadas e acompanhamento na compra já estão liberados na sua conta.</p>
+      <a class="btn ok mt-3" href="#/app/mentoria">${ic("video", 16)} Abrir a Mentoria Pro</a></div>`;
+  }
+  return `<div class="card mt-4"><h2>${esc(titulo)} ${Upgrade.tagPro()}</h2>
+    <p class="mt-3">Quer ajuda individual nesta etapa? A mentoria exclusiva, com chamadas e
+      acompanhamento nas compras, faz parte do plano Pro.</p>
+    <a class="btn mt-3" href="${ROTA_PLANO}">Ver o que o Pro inclui ${ic("arrow", 16)}</a></div>`;
 }
 
 function navegacao(ctx, numero) {

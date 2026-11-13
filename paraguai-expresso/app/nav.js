@@ -1,11 +1,10 @@
 // Navegação da área do aluno: barra lateral (desktop), barra de topo e
-// menu inferior (celular). Os itens seguem a ordem da seção 3.1.
+// menu inferior (celular). Itens do Pro aparecem com cadeado no Standard.
 import { ic } from "./lib/icons.js";
 import { logoHTML } from "./lib/logo.js";
-import { GRUPO_COMUNIDADE, ETAPA_DA_FERRAMENTA, NOME_PADRAO, TOTAL_ETAPAS } from "./config.js";
-import {
-  ferramentaLiberada, trilhaConcluida, etapaAtual, nomeNicho,
-} from "./auth.js";
+import { GRUPO_COMUNIDADE, ROTA_PLANO, NOME_PADRAO, TOTAL_ETAPAS } from "./config.js";
+import { trilhaConcluida, etapaAtual, ehPro } from "./auth.js";
+import * as Upgrade from "./components/Upgrade.js";
 
 const iniciais = (nome) => (nome || "").trim().split(/\s+/).slice(0, 2).map((p) => p[0] || "").join("").toUpperCase() || "AL";
 
@@ -14,10 +13,15 @@ const PRINCIPAIS = [
   { id: "trilha", rota: "#/app/trilha", nome: "Trilha",  icone: "map" },
 ];
 const FERRAMENTAS = [
-  { id: "calculadora",  rota: "#/app/calculadora",  nome: "Calculadora",     icone: "calc", ferramenta: "calculadora" },
-  { id: "fornecedores", rota: "#/app/fornecedores", nome: "Fornecedores",    icone: "box",  ferramenta: "fornecedores" },
-  { id: "freteiros",    rota: "#/app/freteiros",    nome: "Freteiros",       icone: "truck", ferramenta: "freteiros" },
-  { id: "envio",        rota: "#/app/envio",        nome: "Envio no Brasil", icone: "send", ferramenta: "envio" },
+  { id: "calculadora",  rota: "#/app/calculadora",  nome: "Calculadora",     icone: "calc" },
+  { id: "fornecedores", rota: "#/app/fornecedores", nome: "Fornecedores",    icone: "box" },
+  { id: "freteiros",    rota: "#/app/freteiros",    nome: "Freteiros",       icone: "truck" },
+  { id: "envio",        rota: "#/app/envio",        nome: "Envio no Brasil", icone: "send" },
+];
+// Itens do plano Pro: no Standard viram cadeado que leva à página de planos.
+const DO_PRO = [
+  { id: "compras-coletivas", rota: "#/app/compras-coletivas", nome: "Compras coletivas", icone: "cart",  pro: true },
+  { id: "mentoria",          rota: "#/app/mentoria",          nome: "Mentoria Pro",      icone: "video", pro: true },
 ];
 const OUTROS = [
   { id: "loja-parceira", rota: "#/app/loja-parceira", nome: "Loja parceira", icone: "bag" },
@@ -30,11 +34,10 @@ const rotaBase = () => "#" + (location.hash.slice(1) || "/app").split("/").slice
 const ativo = (rota) => rotaBase() === rota ? " ativo" : "";
 
 function itemLink(item, ctx, { ib = 19 } = {}) {
-  // Ferramenta ainda travada
-  if (item.ferramenta && !ferramentaLiberada(ctx, ETAPA_DA_FERRAMENTA[item.ferramenta])) {
-    const n = ETAPA_DA_FERRAMENTA[item.ferramenta];
-    return `<button class="nav travado" title="Libera na etapa ${n}">
-      <span class="ib">${ic("lock", ib)}</span>${item.nome}<span class="lock-tip">Etapa ${n}</span></button>`;
+  // Item do Pro no plano Standard: cadeado que leva aos planos.
+  if (item.pro && !ehPro(ctx)) {
+    return `<a class="nav travado-pro" href="${ROTA_PLANO}" title="Disponível no plano Pro">
+      <span class="ib">${ic("lock", ib)}</span>${item.nome}<span class="lock-tip">Pro</span></a>`;
   }
   // Certificado travado
   if (item.certificado && !trilhaConcluida(ctx)) {
@@ -50,31 +53,39 @@ function itemLink(item, ctx, { ib = 19 } = {}) {
 
 function blocoPerfil(ctx) {
   const nome = ctx?.perfil?.nome || NOME_PADRAO;
-  const chips = (ctx?.nichos || []).map((s) => `<span class="nicho-chip">${nomeNicho(ctx, s)}</span>`).join("");
-  return `<div class="profile">
+  return `<a class="profile" href="${ROTA_PLANO}">
     <div class="avatar">${iniciais(ctx?.perfil?.nome)}</div>
     <div class="profile-info"><b class="nome">${nome}</b>
-      <div class="nichos">${chips || '<span class="muted" style="font-size:12px">Sem nicho</span>'}</div></div>
-  </div>`;
+      <div class="perfil-selos">${Upgrade.selo(ctx)}</div></div>
+  </a>`;
 }
 
 function sidebar(ctx) {
+  const rodape = ehPro(ctx)
+    ? `<a class="btn-comunidade" href="${GRUPO_COMUNIDADE}" target="_blank" rel="noopener">Comunidade de importados</a>`
+    : `<a class="btn-upgrade" href="${ROTA_PLANO}">${ic("star", 14)} Conhecer o plano Pro</a>`;
   return `<a class="brand" href="#/app">${logoHTML()}</a>
     ${blocoPerfil(ctx)}
     <nav class="side-nav">
       ${PRINCIPAIS.map((i) => itemLink(i, ctx)).join("")}
       <div class="nav-group-label">Ferramentas</div>
       ${FERRAMENTAS.map((i) => itemLink(i, ctx)).join("")}
+      <div class="nav-group-label">Plano Pro</div>
+      ${DO_PRO.map((i) => itemLink(i, ctx)).join("")}
       <div class="nav-group-label">Mais</div>
       ${OUTROS.map((i) => itemLink(i, ctx)).join("")}
     </nav>
-    <a class="btn-comunidade" href="${GRUPO_COMUNIDADE}" target="_blank" rel="noopener">Comunidade de importados</a>`;
+    ${rodape}`;
 }
 
 function topbar(ctx) {
   const nome = ctx?.perfil?.nome || NOME_PADRAO;
+  const selo = ehPro(ctx)
+    ? Upgrade.selo(ctx)
+    : `<a class="selo-plano link-plano" href="${ROTA_PLANO}">${ic("star", 11)} Virar Pro</a>`;
   return `<a class="brand" href="#/app">${logoHTML()}</a>
     <span class="sp"></span>
+    ${selo}
     <button class="notif" aria-label="Notificações">${ic("bell", 18)}</button>
     <div class="avatar sm" title="${nome}">${iniciais(ctx?.perfil?.nome)}</div>`;
 }
@@ -83,28 +94,24 @@ function bottomnav(ctx) {
   const curtos = [
     { id: "inicio", rota: "#/app", nome: "Início", icone: "home" },
     { id: "trilha", rota: "#/app/trilha", nome: "Trilha", icone: "map" },
-    { id: "calculadora", rota: "#/app/calculadora", nome: "Calcular", icone: "calc", ferramenta: "calculadora" },
-    { id: "fornecedores", rota: "#/app/fornecedores", nome: "Fornec.", icone: "box", ferramenta: "fornecedores" },
+    { id: "calculadora", rota: "#/app/calculadora", nome: "Calcular", icone: "calc" },
+    { id: "fornecedores", rota: "#/app/fornecedores", nome: "Fornec.", icone: "box" },
   ];
-  const cel = (i) => {
-    const travada = i.ferramenta && !ferramentaLiberada(ctx, ETAPA_DA_FERRAMENTA[i.ferramenta]);
-    const icone = travada ? "lock" : i.icone;
-    const cls = travada ? "" : ativo(i.rota);
-    return travada
-      ? `<button class="${cls}">${ic(icone, 20)}${i.nome}</button>`
-      : `<a class="${cls}" href="${i.rota}">${ic(icone, 20)}${i.nome}</a>`;
-  };
+  const cel = (i) => `<a class="${ativo(i.rota)}" href="${i.rota}">${ic(i.icone, 20)}${i.nome}</a>`;
   return curtos.map(cel).join("") +
     `<button id="btn-mais">${ic("more", 20)}Mais</button>`;
 }
 
 function sheetMais(ctx) {
-  const itens = [...FERRAMENTAS.slice(2), ...OUTROS];
+  const itens = [...FERRAMENTAS.slice(2), ...DO_PRO, ...OUTROS];
+  const upgrade = ehPro(ctx) ? "" : Upgrade.faixa(ctx, { compacta: true, texto: "Compras coletivas e mentoria exclusiva." });
   return `<div class="row-between" style="margin-bottom:8px">
       <strong>Mais</strong>
       <button class="link" id="fechar-mais">Fechar</button>
     </div>
+    ${upgrade}
     ${itens.map((i) => itemLink(i, ctx)).join("")}
+    <a class="nav" href="${ROTA_PLANO}"><span class="ib">${ic("star", 19)}</span>Meu plano${ehPro(ctx) ? "" : '<span class="lock-tip">Standard</span>'}</a>
     <a class="nav" href="#/sair">${ic("logout", 19)}<span class="ib" style="display:none"></span>Sair</a>`;
 }
 
@@ -124,4 +131,6 @@ export function montarNav(ctx) {
   document.getElementById("btn-mais")?.addEventListener("click", abrir);
   document.getElementById("fechar-mais")?.addEventListener("click", fechar);
   bg?.addEventListener("click", fechar);
+  // Clicar num link da folha navega e fecha.
+  sh?.addEventListener("click", (ev) => { if (ev.target.closest("a")) fechar(); });
 }

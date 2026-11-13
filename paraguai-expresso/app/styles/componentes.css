@@ -142,14 +142,36 @@ select[data-sel]{background:var(--panel-2);border:1px solid var(--line-2);color:
 .item-ctrl .in-num{width:110px}
 .qty-sm{display:flex;align-items:center;gap:12px;font-weight:700;font-size:18px}
 .qty-sm button{width:40px;height:40px;border:1px solid var(--line-2);border-radius:var(--r-sm);font-size:20px}
-.item-calc{display:flex;gap:16px;margin-top:8px;font-size:13px;flex-wrap:wrap}
 
 .custo-linha{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 0;border-top:1px solid var(--line)}
 .custo-linha label{flex:1;min-width:150px;font-size:14px;font-weight:600;display:flex;flex-direction:column;gap:2px}
 .custo-linha .origem{font-weight:400;font-size:12px}
+.custo-linha label.chk-inline{flex-direction:row;align-items:center;flex-wrap:wrap;gap:4px 8px;cursor:pointer}
+.custo-linha label.chk-inline input{width:18px;height:18px;flex:none;accent-color:var(--accent)}
+
+/* número do passo nos títulos da calculadora */
+h2 .passo{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;
+  background:var(--accent);color:var(--on-accent);font-size:13px;font-weight:800;margin-right:8px;
+  vertical-align:2px}
+
+/* escolha "% da compra" x "R$ por unidade" */
+.toggle-sel{display:flex;gap:6px;flex-wrap:wrap}
+.chip-btn.sm{padding:7px 12px;font-size:13px;min-height:38px}
+.tabela-dica{font-size:12px;margin:-2px 0 6px}
+
+/* bloco recolhido com os custos menos usados */
+.mais-custos{border-top:1px solid var(--line);padding-top:4px}
+.mais-custos > summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);
+  padding:8px 0;list-style:none}
+.mais-custos > summary::-webkit-details-marker{display:none}
+.mais-custos > summary::before{content:"+ ";font-weight:800}
+.mais-custos[open] > summary::before{content:"− "}
+.mais-custos .custo-linha:first-of-type{border-top:0}
 
 .res-linha{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0}
 .res-linha.grande b{font-size:22px}
+.res-linha.destaque{background:var(--accent-soft);border-radius:var(--r-sm);padding:8px 10px;margin:8px 0}
+.res-linha.destaque b{color:var(--accent);font-size:18px}
 .res-comp{display:flex;flex-direction:column;gap:2px}
 .res-d{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
 .sep{border:0;border-top:1px solid var(--line);margin:12px 0}
@@ -213,8 +235,8 @@ select[data-sel]{background:var(--panel-2);border:1px solid var(--line-2);color:
 .dois-cards{display:grid;gap:16px;grid-template-columns:1fr}
 @media(min-width:760px){.dois-cards{grid-template-columns:1fr 1fr}}
 .duvida-acoes{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.nicho-linha{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
-.nicho-linha:first-child{border-top:0}
+.linha-info{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.linha-info:first-child{border-top:0}
 .liberado{color:var(--ok);font-size:13px;display:inline-flex;align-items:center;gap:4px}
 
 /* ---------- Certificado ---------- */
@@ -279,6 +301,98 @@ select[data-sel]{background:var(--panel-2);border:1px solid var(--line-2);color:
 .faq p{margin-top:8px}
 .pub-rodape{text-align:center;border-top:1px solid var(--line);padding-top:20px}
 .pub-rodape p{margin:4px 0;font-size:13px}
+
+/* ================================================================
+   PLANOS (Standard / Pro) — selos, faixa de upgrade, cadeados e a
+   tabela comparativa da página /app/plano.
+   ================================================================ */
+
+/* selo do plano (barra lateral, topo, listas) */
+.selo-plano{display:inline-flex;align-items:center;gap:4px;background:var(--panel-3);color:var(--mute);
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill);white-space:nowrap}
+.selo-plano.pro{background:var(--accent);color:var(--on-accent)}
+.selo-plano.sm{font-size:10px;padding:2px 8px}
+.link-plano{border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent)}
+
+/* faixa de incentivo */
+.upg-faixa{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
+  background:linear-gradient(110deg,#17397f,#102a66 65%);border:1px solid var(--accent);
+  border-radius:var(--r-xl);padding:22px}
+.upg-corpo{min-width:0;display:flex;flex-direction:column;gap:4px}
+.upg-faixa small{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-weight:800;
+  font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.upg-faixa b{font-size:19px}
+.upg-itens{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:8px;font-size:14px}
+.upg-itens li{display:flex;align-items:center;gap:8px;color:var(--text)}
+.upg-itens .ic{color:var(--ok)}
+
+.upg-linha{display:flex;align-items:center;gap:12px;background:var(--accent-soft);
+  border:1px solid var(--accent);border-radius:var(--r);padding:12px 14px;font-size:14px}
+.upg-linha .ib{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;
+  background:var(--accent);color:var(--on-accent)}
+.upg-linha .upg-seta{margin-left:auto;color:var(--accent);flex:none}
+
+/* item/card trancado */
+.card-trancado{display:block;border-style:dashed;border-color:var(--line-2)}
+.card-trancado:hover{border-color:var(--accent)}
+.trancado-topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.trancado-topo .ib{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;
+  background:var(--panel-2);color:var(--mute)}
+.forn-card.bloqueado{display:block;border-style:dashed;border-color:var(--line-2)}
+.forn-card.bloqueado:hover{border-color:var(--accent)}
+.forn-card.bloqueado .borrado{filter:blur(3px);user-select:none}
+.forn-card.bloqueado .btn.plain{display:inline-flex;color:var(--accent)}
+
+.tranca-hero{text-align:center}
+.tranca-ic{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);margin-bottom:12px}
+.tranca-hero b{display:block;font-size:19px}
+
+.nav.travado-pro{color:var(--mute)}
+.nav.travado-pro .ib{background:transparent;border:1px solid var(--line)}
+.nav.travado-pro:hover{background:var(--panel-3);color:var(--ink)}
+.nav.travado-pro .lock-tip{color:var(--accent)}
+
+.btn-upgrade{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;
+  border:1.5px solid var(--accent);color:var(--accent);font-weight:800;font-size:11px;letter-spacing:1.2px;
+  text-transform:uppercase;padding:13px;border-radius:var(--r);text-align:center}
+.btn-upgrade:hover{background:var(--accent-soft)}
+
+.atalho.cor-pro .ib{background:var(--accent);color:var(--on-accent)}
+.atalho.travado-pro{border-style:dashed;border-color:var(--line-2)}
+.atalho.travado-pro:hover{border-color:var(--accent)}
+.atalho.travado-pro .ib{background:transparent;border:1px solid var(--line)}
+.atalhos.atalhos-2{grid-template-columns:1fr 1fr}
+
+/* cartões de plano (página /app/plano e página pública) */
+.planos-grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:760px){.planos-grid{grid-template-columns:1fr 1fr;align-items:start}}
+.plano-card{position:relative;display:flex;flex-direction:column;gap:4px;background:var(--panel);
+  border:1px solid var(--line);border-radius:var(--r-xl);padding:24px}
+.plano-card.destaque{border-color:var(--accent);box-shadow:var(--shadow)}
+.plano-card.atual{background:var(--panel-3)}
+.plano-fita{position:absolute;top:-11px;left:24px;display:inline-flex;align-items:center;gap:5px;
+  background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:800;letter-spacing:.5px;
+  text-transform:uppercase;padding:4px 12px;border-radius:var(--r-pill)}
+.plano-topo{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.plano-topo b{font-size:22px}
+.plano-preco{display:flex;align-items:baseline;gap:8px;margin:14px 0 2px;flex-wrap:wrap}
+.plano-preco b{font-size:34px;line-height:1;color:var(--accent)}
+.plano-preco .muted{font-size:13px}
+.plano-recorrencia{display:flex;flex-direction:column;gap:2px;background:var(--panel-2);
+  border-radius:var(--r);padding:10px 12px;margin-top:10px;font-size:14px;font-weight:600;color:var(--ink)}
+.plano-recorrencia .muted{font-weight:400;font-size:12px}
+.plano-lista{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:16px;font-size:14px}
+.plano-lista li{display:flex;align-items:flex-start;gap:8px}
+.plano-lista li .ic{margin-top:3px}
+.plano-lista li.ok .ic{color:var(--ok)}
+.plano-lista li.fora{color:var(--mute)}
+.plano-lista li.fora .ic{color:var(--err)}
+.plano-rodape{display:block;margin-top:16px;font-size:13px}
+
+.tabela-planos th:not(:first-child),.tabela-planos td:not(:first-child){text-align:center;width:88px}
+.tabela-planos .tem{color:var(--ok)}
+.tabela-planos .nao{color:var(--mute);opacity:.6}
 
 /* ---------- Toast ---------- */
 .toast{position:fixed;left:50%;bottom:calc(var(--bottomnav-h) + 16px);transform:translate(-50%,20px);

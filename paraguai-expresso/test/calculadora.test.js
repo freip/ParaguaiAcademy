@@ -57,6 +57,25 @@ test("nota fiscal abaixo e acima de R$ 1.650", () => {
   assert.equal(desligada, 0);
 });
 
+test("nota fiscal por percentual simples (modo da calculadora)", () => {
+  // Sem ate_valor: o percentual vale para qualquer valor de compra.
+  assert.equal(r2(valorNota(1000, { ligada: true, percentual: 7 })), 70);
+  assert.equal(r2(valorNota(2000, { ligada: true, percentual: 7 })), 140);
+  assert.equal(valorNota(2000, { ligada: false, percentual: 7 }), 0);
+  // Percentual editável pelo aluno.
+  assert.equal(r2(valorNota(1000, { ligada: true, percentual: 12 })), 120);
+});
+
+test("freteiro escolhido pelo aluno: percentual ou valor por unidade", () => {
+  const itens = [{ preco_usd: 20, qtd: 5, frete: { tipo: "percentual", valor: 18 } }];
+  const pct = calcular(itens, { cotacao: 5, nota: { ligada: false }, ...semCustos });
+  assert.equal(r2(pct.freteiro_total), 90); // 18% de 20*5*5 = 500
+
+  const porUnidade = [{ preco_usd: 20, qtd: 5, frete: { tipo: "fixo_unidade", valor: 180 } }];
+  const fixo = calcular(porUnidade, { cotacao: 5, nota: { ligada: false }, ...semCustos });
+  assert.equal(r2(fixo.freteiro_total), 900); // 180 x 5 unidades
+});
+
 test("rateio proporcional ao valor do item", () => {
   // Dois itens de valores diferentes, um custo rateável de R$ 100.
   const itens = [

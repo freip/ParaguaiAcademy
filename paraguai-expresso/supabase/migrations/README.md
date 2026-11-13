@@ -12,9 +12,46 @@ No Supabase do projeto: **SQL Editor > New query**, cole e rode **em ordem**:
 2. `0002_functions.sql` — funções de progresso e gatilhos.
 3. `0003_rls.sql` — regras de acesso (quem lê/escreve o quê).
 4. `0004_seed.sql` — conteúdo inicial (nichos, 8 etapas, 18 vídeos sem URL, freteira Evelin, canais, exemplos, configurações).
+5. `0005_sync.sql` — colunas e tabela de apoio do robô da Mega.
+6. `0006_abrir.sql` — tira os bloqueios: nada é obrigatório, só progresso.
+7. `0007_produtos_abertos.sql` — a calculadora mostra todos os produtos.
+8. `0008_planos.sql` — nicho único **Geral** e os dois planos (**Standard** e **Pro**).
+9. `0009_fecha_vitrine.sql` — fecha a vitrine de fornecedores para quem não tem login.
+
+> `APLICAR-TUDO.sql` junta os 9 arquivos na ordem certa — é o atalho para um
+> banco novo. Em banco que já existe, rode só os que faltam.
 
 Pode rodar de novo quando quiser: os arquivos são idempotentes e **não apagam**
-o que o admin já cadastrou.
+o que o admin já cadastrou. Rode sempre **em ordem**: 0006 solta bloqueios que
+0002 cria, e 0008/0009 refazem políticas que 0003 cria.
+
+## Cuidado com view nova no schema `public`
+
+O Supabase tem `ALTER DEFAULT PRIVILEGES` no schema `public`: toda tabela ou
+view nova nasce com `select` liberado para o papel `anon` (quem não fez login).
+Em tabela isso não é problema, porque a RLS filtra depois. **Em view é**, porque
+view não tem RLS própria — e as nossas rodam com os direitos do dono, de
+propósito, para poder mascarar campo. Então, ao criar uma view:
+
+```sql
+revoke all on public.<view> from anon, public;
+grant select on public.<view> to authenticated;
+```
+
+Foi exatamente esse o furo que o `0009` corrigiu na `fornecedores_lista`.
+
+## Planos (a partir de 0008)
+
+- `perfis.plano` = `standard` | `pro` (o admin troca em **Alunos → Virar Pro**).
+- `fornecedores.premium` = loja só do Pro. A view `fornecedores_lista` mostra a
+  loja na vitrine mas **apaga o contato** de quem não é Pro, e marca
+  `bloqueado = true` — o cadeado da tela é só o aviso, o bloqueio é no banco.
+- `configuracoes.so_pro` = chave que só o Pro lê (link do grupo de compras
+  coletivas, WhatsApp e agenda da mentoria).
+- `public.sou_pro()` responde se o usuário da requisição é Pro (admin conta
+  como Pro, para conseguir conferir as telas).
+- Nicho: existe só o `geral`; os antigos ficam na tabela com `ativo = false`
+  por causa das chaves estrangeiras já gravadas.
 
 ## Login de aluno (número + senha)
 

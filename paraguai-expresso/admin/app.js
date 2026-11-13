@@ -29,11 +29,11 @@ function telaLogin(msg = "") {
 const SECOES = [
   ["alunos", "Alunos"], ["videos", "Vídeos"], ["fornecedores", "Fornecedores"],
   ["freteiros", "Freteiros"], ["nota", "Nota fiscal"], ["lojas", "Lojas"],
-  ["produtos", "Produtos"], ["canais", "Canais de venda"], ["config", "Configurações"],
+  ["produtos", "Produtos"], ["config", "Configurações"],
 ];
 
 async function iniciar() {
-  try { NICHOS = (await rest("nichos?select=slug,nome&order=ordem.asc")) || []; } catch { NICHOS = []; }
+  try { NICHOS = (await rest("nichos?select=slug,nome&ativo=is.true&order=ordem.asc")) || []; } catch { NICHOS = []; }
   app().innerHTML = `<div class="admin-shell">
     <aside class="admin-side"><b class="logo">PARAGUAI <span>ACADEMY</span></b>
       <nav id="menu">${SECOES.map(([id, t]) => `<button data-sec="${id}">${t}</button>`).join("")}</nav>
@@ -111,7 +111,7 @@ function crud(cfg) {
 const RENDER = {
   fornecedores: crud({
     sec: "fornecedores", titulo: "Fornecedores", tabela: "fornecedores", ordem: "nome.asc",
-    resumo: (r) => `${r.nome} · ${r.pais}${r.loja_dos_socios ? " · sócios" : ""}${r.ativo ? "" : " · inativo"}`,
+    resumo: (r) => `${r.nome} · ${r.pais}${r.premium ? " · PRO" : ""}${r.loja_dos_socios ? " · sócios" : ""}${r.ativo ? "" : " · inativo"}`,
     colunas: [
       { c: "nome", r: "Nome", t: "text" }, { c: "pais", r: "País", t: "select", opcoes: [["PY", "Paraguai"], ["BR", "Brasil"]] },
       { c: "cidade", r: "Cidade", t: "text" }, { c: "nichos", r: "Nichos", t: "nichos" },
@@ -119,6 +119,7 @@ const RENDER = {
       { c: "whatsapp", r: "WhatsApp", t: "text" }, { c: "minimo_valor", r: "Pedido mínimo", t: "number" },
       { c: "minimo_moeda", r: "Moeda", t: "select", opcoes: [["", "-"], ["USD", "USD"], ["BRL", "BRL"]] },
       { c: "pagamento", r: "Pagamento", t: "text" }, { c: "prazo", r: "Prazo", t: "text" },
+      { c: "premium", r: "Premium (só plano Pro)", t: "bool" },
       { c: "verificado", r: "Verificado", t: "bool" }, { c: "destaque", r: "Destaque", t: "bool" },
       { c: "loja_dos_socios", r: "Loja dos sócios", t: "bool" }, { c: "ativo", r: "Ativo", t: "bool", def: true },
     ],
@@ -129,12 +130,6 @@ const RENDER = {
     colunas: [{ c: "nome", r: "Nome", t: "text" }, { c: "cidade", r: "Cidade", t: "text" },
       { c: "site", r: "Site", t: "text" }, { c: "whatsapp", r: "WhatsApp", t: "text" }, { c: "minimo_usd", r: "Mínimo US$", t: "number" }],
   }),
-  canais: crud({
-    sec: "canais", titulo: "Canais de venda", tabela: "canais_venda", ordem: "id.asc",
-    resumo: (r) => `${r.nome} · ${r.taxa_percentual}%${r.ativo ? "" : " · inativo"}`,
-    colunas: [{ c: "nome", r: "Nome", t: "text" }, { c: "taxa_percentual", r: "Taxa (%)", t: "number" }, { c: "ativo", r: "Ativo", t: "bool", def: true }],
-  }),
-
   async videos(sec) {
     let vids = [];
     try { vids = (await rest("videos?select=*&order=etapa.asc,ordem.asc")) || []; }
@@ -165,10 +160,13 @@ const RENDER = {
     let n;
     try { n = (await rest("regras_nota?select=*&id=eq.1"))?.[0] || {}; }
     catch (e) { sec.innerHTML = `<p class="msg erro">${esc(e.message)}</p>`; return; }
-    sec.innerHTML = `<h1>Nota fiscal</h1><div class="card form-grid">
-      <label>Até o valor (R$)<input id="n_ate" type="number" value="${n.ate_valor ?? 1650}"></label>
-      <label>Valor fixo (R$)<input id="n_fix" type="number" value="${n.valor_fixo ?? 100}"></label>
-      <label>Percentual acima (%)<input id="n_pct" type="number" value="${n.percentual_acima ?? 7}"></label>
+    sec.innerHTML = `<h1>Nota fiscal</h1>
+      <p class="muted">A calculadora usa só o <b>percentual</b> (o aluno liga a nota se quiser e pode editar o valor).
+        As duas primeiras linhas são a tabela de referência mostrada na etapa 6.</p>
+      <div class="card form-grid">
+      <label>Percentual usado na calculadora (%)<input id="n_pct" type="number" value="${n.percentual_acima ?? 7}"></label>
+      <label>Referência: até o valor (R$)<input id="n_ate" type="number" value="${n.ate_valor ?? 1650}"></label>
+      <label>Referência: valor fixo (R$)<input id="n_fix" type="number" value="${n.valor_fixo ?? 100}"></label>
       <label>WhatsApp de contato<input id="n_zap" value="${esc(n.contato_whatsapp || "")}"></label>
       <div class="form-acoes"><button class="btn sm" id="n_salvar">Salvar</button><span id="n_msg"></span></div></div>`;
     sec.querySelector("#n_salvar").onclick = async () => {
@@ -307,45 +305,70 @@ async function secaoAlunos(sec) {
   let perfis = [], acessos = [], progresso = [];
   try {
     [perfis, acessos, progresso] = await Promise.all([
-      rest("perfis?select=id,nome,whatsapp,caminho,papel,criado_em&order=criado_em.desc"),
+      rest("perfis?select=id,nome,whatsapp,caminho,papel,plano,criado_em&order=criado_em.desc"),
       rest("acessos?select=usuario_id,nicho"),
       rest("progresso_etapas?select=usuario_id,etapa,status,concluida_em"),
     ]);
   } catch (e) { sec.innerHTML = `<p class="msg erro">${esc(e.message)}</p>`; return; }
   const etapaAtual = (uid) => (progresso || []).find((p) => p.usuario_id === uid && p.status === "atual")?.etapa || "—";
-  const nichosDe = (uid) => (acessos || []).filter((a) => a.usuario_id === uid).map((a) => a.nicho);
+  const temAcesso = (uid) => (acessos || []).some((a) => a.usuario_id === uid);
+  const alunos = (perfis || []).filter((p) => p.papel !== "admin");
+  const nPro = alunos.filter((p) => p.plano === "pro").length;
 
   sec.innerHTML = `<h1>Alunos</h1>
     <div class="card"><h2>Criar conta</h2>
       <div class="form-grid"><label>Número (WhatsApp)<input id="a_num" placeholder="+5531999999999"></label>
       <label>Senha provisória<input id="a_sen" value="mudar123"></label>
-      <label>Nicho<select id="a_nic">${NICHOS.map((n) => `<option value="${n.slug}">${esc(n.nome)}</option>`).join("")}</select></label>
+      <label>Plano<select id="a_plano"><option value="standard">Standard</option><option value="pro">Pro</option></select></label>
       <label>Nome<input id="a_nome"></label>
-      <div class="form-acoes"><button class="btn sm" id="a_criar">Criar</button><span id="a_msg"></span></div></div></div>
-    <div class="card"><h2>Contas (${(perfis || []).length})</h2>
-      <table class="tbl"><thead><tr><th>Nome</th><th>Número</th><th>Nichos</th><th>Caminho</th><th>Etapa</th><th>Ações</th></tr></thead>
-      <tbody>${(perfis || []).filter((p) => p.papel !== "admin").map((p) => `<tr>
+      <div class="form-acoes"><button class="btn sm" id="a_criar">Criar</button><span id="a_msg"></span></div></div>
+      <p class="muted">O acesso é liberado no nicho <b>Geral</b> (único hoje). O plano define o que ele vê.</p></div>
+    <div class="card"><h2>Contas (${alunos.length} · ${nPro} no Pro)</h2>
+      <table class="tbl"><thead><tr><th>Nome</th><th>Número</th><th>Plano</th><th>Acesso</th><th>Caminho</th><th>Etapa</th><th>Ações</th></tr></thead>
+      <tbody>${alunos.map((p) => {
+        const pro = p.plano === "pro";
+        return `<tr>
         <td>${esc(p.nome || "—")}</td><td>${esc(p.whatsapp || "—")}</td>
-        <td>${nichosDe(p.id).map((n) => `<span class="tag">${esc(n)}</span>`).join("") || "—"}</td>
+        <td><span class="tag${pro ? " pro" : ""}">${pro ? "Pro" : "Standard"}</span></td>
+        <td>${temAcesso(p.id) ? "liberado" : "<b>sem acesso</b>"}</td>
         <td>${esc(p.caminho)}</td><td>${etapaAtual(p.id)}</td>
-        <td><button class="link" data-lib="${p.id}">Liberar nicho</button>
-          <button class="link" data-rev="${p.id}">Revogar</button>
-          <button class="link" data-rst="${p.id}">Resetar senha</button></td></tr>`).join("")}</tbody></table></div>`;
+        <td><button class="link" data-plano="${p.id}" data-para="${pro ? "standard" : "pro"}">${pro ? "Voltar ao Standard" : "Virar Pro"}</button>
+          <button class="link" data-lib="${p.id}">${temAcesso(p.id) ? "Revogar acesso" : "Liberar acesso"}</button>
+          <button class="link" data-rst="${p.id}">Resetar senha</button></td></tr>`;
+      }).join("")}</tbody></table></div>`;
 
   sec.querySelector("#a_criar").onclick = async () => {
     const m = sec.querySelector("#a_msg");
     try {
-      const d = await chamarApi("/api/admin/criar-aluno", { numero: sec.querySelector("#a_num").value, senha: sec.querySelector("#a_sen").value, nicho: sec.querySelector("#a_nic").value, nome: sec.querySelector("#a_nome").value.trim() });
+      const d = await chamarApi("/api/admin/criar-aluno", {
+        numero: sec.querySelector("#a_num").value,
+        senha: sec.querySelector("#a_sen").value,
+        nicho: NICHOS[0]?.slug || "geral",
+        plano: sec.querySelector("#a_plano").value,
+        nome: sec.querySelector("#a_nome").value.trim(),
+      });
       msg(m, `Criado: ${d.phone}`, true); abrir("alunos");
     } catch (e) { msg(m, e.message); }
   };
-  sec.querySelectorAll("[data-lib]").forEach((b) => b.onclick = async () => {
-    const nicho = prompt("Nicho para liberar (" + NICHOS.map((n) => n.slug).join(", ") + "):"); if (!nicho) return;
-    try { await rest("acessos", { method: "POST", prefer: "resolution=merge-duplicates,return=minimal", body: JSON.stringify({ usuario_id: b.dataset.lib, nicho }) }); abrir("alunos"); } catch (e) { alert(e.message); }
+  sec.querySelectorAll("[data-plano]").forEach((b) => b.onclick = async () => {
+    const para = b.dataset.para;
+    if (!confirm(`Mudar este aluno para o plano ${para === "pro" ? "Pro" : "Standard"}?`)) return;
+    try { await rest(`perfis?id=eq.${b.dataset.plano}`, { method: "PATCH", prefer: "return=minimal", body: JSON.stringify({ plano: para }) }); abrir("alunos"); }
+    catch (e) { alert(e.message); }
   });
-  sec.querySelectorAll("[data-rev]").forEach((b) => b.onclick = async () => {
-    const nicho = prompt("Nicho para revogar:"); if (!nicho) return;
-    try { await rest(`acessos?usuario_id=eq.${b.dataset.rev}&nicho=eq.${encodeURIComponent(nicho)}`, { method: "DELETE", prefer: "return=minimal" }); abrir("alunos"); } catch (e) { alert(e.message); }
+  sec.querySelectorAll("[data-lib]").forEach((b) => b.onclick = async () => {
+    const uid = b.dataset.lib;
+    const nicho = NICHOS[0]?.slug || "geral";
+    const jaTem = (acessos || []).some((a) => a.usuario_id === uid);
+    try {
+      if (jaTem) {
+        if (!confirm("Revogar o acesso deste aluno? Ele perde a área do aluno.")) return;
+        await rest(`acessos?usuario_id=eq.${uid}`, { method: "DELETE", prefer: "return=minimal" });
+      } else {
+        await rest("acessos", { method: "POST", prefer: "resolution=merge-duplicates,return=minimal", body: JSON.stringify({ usuario_id: uid, nicho }) });
+      }
+      abrir("alunos");
+    } catch (e) { alert(e.message); }
   });
   sec.querySelectorAll("[data-rst]").forEach((b) => b.onclick = async () => {
     const senha = prompt("Nova senha provisória (6+):", "mudar123"); if (!senha) return;

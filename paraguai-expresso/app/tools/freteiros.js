@@ -1,5 +1,6 @@
 // Ferramenta Freteiros. Serve para a página (/app/freteiros) e para o bloco
-// embutido na etapa 5. Mostra cada freteiro e a tabela de preços por nicho.
+// embutido na etapa 5. Mostra cada freteiro, a tabela de preços completa e a
+// mensagem pronta para chamar no WhatsApp.
 import { esc, brl } from "../lib/format.js";
 import { ic } from "../lib/icons.js";
 import { skeletonLista, vazio, erro } from "../lib/dom.js";
@@ -7,8 +8,21 @@ import { listaFreteiros, regrasFreteiro } from "../lib/dados.js";
 import { nomeNicho } from "../auth.js";
 
 const soDigitos = (s) => String(s || "").replace(/\D/g, "");
-const MSG =
-  "Olá! Vim pela Paraguai Academy. Vou trazer mercadoria do Paraguai e preciso de frete. Pode me passar o valor e o prazo?";
+
+// Mensagem pronta: o aluno só troca o que está entre [colchetes].
+export const MSG_FRETEIRO =
+  "Olá! Sou do grupo do Paraguai Academy e preciso de frete do Paraguai para o Brasil.\n\n" +
+  "• Produto: [o que vou trazer]\n" +
+  "• Quantidade: [quantas unidades]\n" +
+  "• Valor da compra: [valor aproximado]\n" +
+  "• Loja: [nome da loja e cidade]\n" +
+  "• Entrega no Brasil: [sua cidade e estado]\n\n" +
+  "Pode me passar o valor do frete e o prazo? Obrigado!";
+
+export const linkWhatsFreteiro = (whatsapp, texto = MSG_FRETEIRO) => {
+  const zap = soDigitos(whatsapp);
+  return zap ? `https://wa.me/${zap}?text=${encodeURIComponent(texto)}` : "";
+};
 
 function descreveRegra(r) {
   if (r.tipo === "percentual") {
@@ -21,8 +35,6 @@ function descreveRegra(r) {
 }
 
 export async function montar(ctx, app, container, opts = {}) {
-  const estado = { nicho: ctx.perfil?.nicho_principal || ctx.nichos[0] || null, verTodos: false };
-
   container.innerHTML = skeletonLista(2);
   let freteiros = [], regras = [];
   try { [freteiros, regras] = await Promise.all([listaFreteiros(), regrasFreteiro()]); }
@@ -30,16 +42,15 @@ export async function montar(ctx, app, container, opts = {}) {
   freteiros = freteiros || []; regras = regras || [];
 
   const card = (f) => {
-    const rs = regras.filter((r) => r.freteiro_id === f.id)
-      .filter((r) => estado.verTodos || !estado.nicho || r.nicho === estado.nicho);
+    const rs = regras.filter((r) => r.freteiro_id === f.id);
     const linhas = rs.length
-      ? rs.map((r) => `<tr><td>${esc(nomeNicho(ctx, r.nicho))}${r.faixa ? ` · ${esc(r.faixa)}` : ""}</td>
+      ? rs.map((r) => `<tr><td>${esc(r.faixa || nomeNicho(ctx, r.nicho))}</td>
           <td>${esc(descreveRegra(r))}</td></tr>`).join("")
-      : `<tr><td colspan="2" class="muted">Sem tabela para este nicho. Veja todos ou consulte o freteiro.</td></tr>`;
-    const zap = soDigitos(f.whatsapp);
-    const botao = zap
-      ? `<a class="btn ok sm mt-3" target="_blank" rel="noopener"
-           href="https://wa.me/${zap}?text=${encodeURIComponent(MSG)}">${ic("send", 15)} Falar no WhatsApp</a>` : "";
+      : `<tr><td colspan="2" class="muted">Sem tabela cadastrada. Consulte o freteiro.</td></tr>`;
+    const link = linkWhatsFreteiro(f.whatsapp);
+    const botao = link
+      ? `<a class="btn ok sm" target="_blank" rel="noopener" href="${link}">${ic("send", 15)} Abrir WhatsApp com a mensagem</a>`
+      : '<span class="muted" style="font-size:13px">WhatsApp não cadastrado.</span>';
     return `<div class="card">
       <div class="forn-topo"><b>${esc(f.nome)}</b></div>
       <div class="forn-meta mt-2">
@@ -48,34 +59,34 @@ export async function montar(ctx, app, container, opts = {}) {
         ${f.observacoes ? `<div><span class="muted">Obs.:</span> ${esc(f.observacoes)}</div>` : ""}
       </div>
       <table class="tabela mt-3"><thead><tr><th>Produto</th><th>Cobrança</th></tr></thead>
-        <tbody>${linhas}</tbody></table>${botao}</div>`;
+        <tbody>${linhas}</tbody></table>
+      <b class="mt-3" style="display:block">Mensagem pronta</b>
+      <div class="msg-texto">${esc(MSG_FRETEIRO)}</div>
+      <div class="msg-acoes">
+        ${botao}
+        <button class="btn plain sm" data-acao="copiar-msg">${ic("check", 15)} Copiar</button>
+      </div></div>`;
   };
 
   function render() {
     container.innerHTML = `
       ${opts.embutido ? "" : `<h1>Freteiros</h1><p class="sub">Quem traz sua mercadoria do Paraguai até o Brasil.</p>
         <p class="dica mt-2">Dica: a aula sobre freteiros está na <a class="link" href="#/app/trilha/5">etapa 5 da trilha</a>.</p>`}
-      <div class="row-between mt-3">
-        <div class="chips">${chips()}</div>
-        <button class="link" data-acao="ver-todos">${estado.verTodos ? "Ver só meu nicho" : "Ver todos os preços"}</button>
-      </div>
       <div class="mt-3">${freteiros.length ? freteiros.map(card).join("") : vazio("Nenhum freteiro cadastrado ainda.")}</div>
-      <span class="aviso mt-3">Consulte a tabela diretamente com o freteiro antes de comprar.</span>
+      <span class="aviso mt-3">Confirme a tabela direto com o freteiro antes de comprar.</span>
       <p class="muted mt-3" style="font-size:14px">Dica: também temos perfumes no atacado já no Brasil. Veja a
         <a class="link" href="#/app/loja-parceira">Loja parceira</a>.</p>`;
   }
-  const chips = () => {
-    const opc = ctx.nichos.map((s) => ({ s, n: nomeNicho(ctx, s) }));
-    return opc.map((o) =>
-      `<button class="chip-btn${estado.nicho === o.s && !estado.verTodos ? " on" : ""}" data-nicho="${esc(o.s)}">${esc(o.n)}</button>`
-    ).join("");
-  };
 
-  container.onclick = (ev) => {
-    const vt = ev.target.closest("[data-acao='ver-todos']");
-    if (vt) { estado.verTodos = !estado.verTodos; render(); return; }
-    const ch = ev.target.closest("[data-nicho]");
-    if (ch) { estado.nicho = ch.dataset.nicho; estado.verTodos = false; render(); return; }
+  container.onclick = async (ev) => {
+    const b = ev.target.closest("[data-acao='copiar-msg']");
+    if (!b) return;
+    try {
+      await navigator.clipboard.writeText(MSG_FRETEIRO);
+      const antes = b.innerHTML;
+      b.textContent = "Copiado";
+      setTimeout(() => { b.innerHTML = antes; }, 1500);
+    } catch { b.textContent = "Copie manualmente"; }
   };
 
   render();

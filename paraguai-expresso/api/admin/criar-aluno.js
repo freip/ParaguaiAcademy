@@ -1,5 +1,6 @@
-// Cria uma conta de aluno (telefone + senha, sem SMS) e libera um nicho.
-// Só funciona para quem está logado como admin.
+// Cria uma conta de aluno (telefone + senha, sem SMS), libera o acesso e
+// define o plano (standard por padrão). Só funciona para quem está logado
+// como admin.
 import { SB_URL, SECRET, admH, exigirAdmin, normalizarTelefone, lerBody } from "./_comum.js";
 
 export default async function handler(req, res) {
@@ -7,7 +8,7 @@ export default async function handler(req, res) {
   if (!SECRET) return res.status(500).json({ erro: "Service role não configurada no servidor." });
   if (!(await exigirAdmin(req))) return res.status(403).json({ erro: "Sem permissão." });
 
-  const { numero, senha, nicho, nome } = await lerBody(req);
+  const { numero, senha, nicho, nome, plano } = await lerBody(req);
   const phone = normalizarTelefone(numero);
   if (phone.length < 13) return res.status(400).json({ erro: "Número inválido." });
   if (!senha || senha.length < 6) return res.status(400).json({ erro: "Senha precisa de 6+ caracteres." });
@@ -25,7 +26,10 @@ export default async function handler(req, res) {
       body: JSON.stringify({ usuario_id: novo.id, nicho }),
     });
   }
-  const patch = { nicho_principal: nicho || null };
+  const patch = {
+    nicho_principal: nicho || null,
+    plano: plano === "pro" ? "pro" : "standard",
+  };
   if (nome) patch.nome = nome;
   await fetch(`${SB_URL}/rest/v1/perfis?id=eq.${novo.id}`, {
     method: "PATCH", headers: { ...admH(), Prefer: "return=minimal" }, body: JSON.stringify(patch),

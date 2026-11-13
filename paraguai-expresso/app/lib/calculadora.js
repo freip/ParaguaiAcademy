@@ -36,12 +36,21 @@ export function freteDoItem(item, cotacao) {
   return 0; // consulta / sem regra
 }
 
-// Valor da nota fiscal a partir da mercadoria em R$ (seção 8.5).
+/**
+ * Valor da nota fiscal a partir da mercadoria em R$.
+ * Dois modos, decididos por `ate_valor`:
+ *  - percentual simples (o que a calculadora usa): só `{ligada, percentual}`,
+ *    sem `ate_valor` → percentual sobre o valor todo da compra;
+ *  - faixa com valor fixo (tabela antiga): com `ate_valor` e `valor_fixo`,
+ *    cobra o fixo até esse valor e o percentual acima dele.
+ */
 export function valorNota(mercadoria_brl, nota) {
   if (!nota || !nota.ligada) return 0;
-  return mercadoria_brl <= num(nota.ate_valor)
-    ? num(nota.valor_fixo)
-    : (num(nota.percentual_acima) / 100) * mercadoria_brl;
+  const pct = nota.percentual != null ? nota.percentual : nota.percentual_acima;
+  if (nota.ate_valor != null && mercadoria_brl <= num(nota.ate_valor)) {
+    return num(nota.valor_fixo);
+  }
+  return (num(pct) / 100) * mercadoria_brl;
 }
 
 /**

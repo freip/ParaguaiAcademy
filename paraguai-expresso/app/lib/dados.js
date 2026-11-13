@@ -42,8 +42,10 @@ export const escolherNichoPrincipal = (nicho) =>
   rpc("escolher_nicho_principal", { p_nicho: nicho });
 
 // ---------- Ferramentas (Fase 6) ----------
+// Vitrine de fornecedores: traz todos os ativos, mas o banco já apaga o
+// contato das lojas premium para quem não é Pro (coluna `bloqueado` diz quais).
 export const listaFornecedores = () =>
-  rest("fornecedores?select=*&ativo=is.true&order=destaque.desc,nome.asc");
+  rest("fornecedores_lista?select=*&order=destaque.desc,nome.asc");
 
 export const listaFreteiros = () =>
   rest("freteiros?select=*&ativo=is.true&order=nome.asc");
@@ -54,14 +56,15 @@ export const regrasFreteiro = () =>
 export const pesosNichos = () => rest("nichos?select=slug,peso_padrao_g");
 
 export const lojaDosSocios = () =>
-  rest("fornecedores?select=*&loja_dos_socios=is.true&ativo=is.true&limit=1");
+  rest("fornecedores_lista?select=*&loja_dos_socios=is.true&limit=1");
 
 // ---------- Calculadora (Fase 7) ----------
-// Mostra todos os produtos (sem filtro de nicho). Traz poucos por vez — o
-// aluno vai digitando para filtrar. Produtos ocultos não aparecem.
+// Busca por termo, sem filtro de nicho. A calculadora só chama isto quando o
+// aluno digita algo — sem termo a lista não aparece. Produtos ocultos ficam de
+// fora.
 export function buscarProdutos(termo) {
-  let q = `produtos?select=*,lojas(nome,site,whatsapp,minimo_usd)&oculto=is.false&order=em_estoque.desc,nome.asc&limit=5`;
   const t = (termo || "").trim();
+  let q = `produtos?select=*,lojas(nome,site,whatsapp,minimo_usd)&oculto=is.false&order=em_estoque.desc,nome.asc&limit=12`;
   if (t) {
     const e = encodeURIComponent(t);
     q += `&or=(nome.ilike.*${e}*,marca.ilike.*${e}*,sku.ilike.*${e}*)`;
@@ -76,7 +79,6 @@ export function ultimaAtualizacaoProdutos(nicho) {
   return rest(q);
 }
 
-export const canaisVenda = () => rest("canais_venda?select=*&ativo=is.true&order=id.asc");
 export const regraNota = () => rest("regras_nota?select=*&id=eq.1");
 
 export const salvarSimulacao = (payload) =>

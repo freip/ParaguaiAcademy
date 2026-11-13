@@ -2,9 +2,8 @@
 // área do aluno, e cuida da navegação por hash.
 import { sessaoAtiva } from "./lib/supabase.js";
 import {
-  carregarContexto, precisaTrocarSenha, temAcesso, ferramentaLiberada, sair as logout,
+  carregarContexto, precisaTrocarSenha, temAcesso, sair as logout,
 } from "./auth.js";
-import { ETAPA_DA_FERRAMENTA } from "./config.js";
 import { montarNav } from "./nav.js";
 import * as publica from "./pages/publica.js";
 import * as login from "./pages/login.js";
@@ -20,13 +19,24 @@ import * as lojaParceira from "./pages/lojaParceira.js";
 import * as inicio from "./pages/inicio.js";
 import * as suporte from "./pages/suporte.js";
 import * as certificado from "./pages/certificado.js";
+import * as plano from "./pages/plano.js";
+import * as comprasColetivas from "./pages/comprasColetivas.js";
+import * as mentoria from "./pages/mentoria.js";
 
-// Rotas de ferramenta: [chave da ferramenta, módulo, nome].
-const FERRAMENTAS_ROTA = {
-  "#/app/calculadora": ["calculadora", calculadora, "Calculadora"],
-  "#/app/fornecedores": ["fornecedores", fornecedores, "Fornecedores"],
-  "#/app/freteiros": ["freteiros", freteiros, "Freteiros"],
-  "#/app/envio": ["envio", envio, "Envio no Brasil"],
+// Telas da área do aluno por rota. Cada módulo exporta montar(ctx, app, view).
+// As de plano Pro tratam o cadeado por dentro (mostram a prévia ao Standard).
+const ROTAS = {
+  "#/app/trilha": trilha,
+  "#/app/calculadora": calculadora,
+  "#/app/fornecedores": fornecedores,
+  "#/app/freteiros": freteiros,
+  "#/app/envio": envio,
+  "#/app/compras-coletivas": comprasColetivas,
+  "#/app/mentoria": mentoria,
+  "#/app/plano": plano,
+  "#/app/loja-parceira": lojaParceira,
+  "#/app/suporte": suporte,
+  "#/app/certificado": certificado,
 };
 
 let ctx = null;
@@ -114,20 +124,7 @@ function render() {
     window.scrollTo(0, 0);
     if (base === "#/app") { inicio.montar(ctx, app, view); return; }
     if (base === "#/app/trilha" && seg[3]) { etapa.montar(ctx, app, view, seg[3]); return; }
-    if (base === "#/app/trilha") { trilha.montar(ctx, app, view); return; }
-    if (base === "#/app/suporte") { suporte.montar(ctx, app, view); return; }
-    if (base === "#/app/certificado") { certificado.montar(ctx, app, view); return; }
-    if (FERRAMENTAS_ROTA[base]) {
-      const [chave, mod, nome] = FERRAMENTAS_ROTA[base];
-      if (!ferramentaLiberada(ctx, ETAPA_DA_FERRAMENTA[chave])) {
-        view.innerHTML = `<h1>${nome}</h1><div class="card mt-4">
-          <span class="aviso">Esta ferramenta libera na etapa ${ETAPA_DA_FERRAMENTA[chave]}. Avance na trilha para desbloquear.</span></div>`;
-      } else {
-        mod.montar(ctx, app, view);
-      }
-      return;
-    }
-    if (base === "#/app/loja-parceira") { lojaParceira.montar(ctx, app, view); return; }
+    if (ROTAS[base]) { ROTAS[base].montar(ctx, app, view); return; }
     view.innerHTML = placeholders.render(ctx, base);
     return;
   }

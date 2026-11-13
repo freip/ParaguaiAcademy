@@ -40,6 +40,7 @@ export async function carregarContexto() {
   return {
     uid,
     perfil,
+    plano: perfil?.plano === "pro" ? "pro" : "standard",
     acessos: acessos || [],
     progresso: progresso || [],
     nichos: (acessos || []).map((a) => a.nicho),
@@ -67,10 +68,6 @@ export const statusEtapa = (ctx, n) =>
 export const etapaAtual = (ctx) =>
   ctx?.progresso?.find((p) => p.status === "atual")?.etapa || null;
 
-// Todas as ferramentas ficam sempre liberadas (nada é bloqueado). Mantida a
-// assinatura porque é usada em vários lugares.
-export const ferramentaLiberada = () => true;
-
 export const etapaConcluida = (ctx, n) => statusEtapa(ctx, n) === "concluida";
 
 // Certificado libera quando nenhuma etapa aplicável está pendente.
@@ -80,3 +77,10 @@ export const trilhaConcluida = (ctx) =>
 
 export const nomeNicho = (ctx, slug) =>
   ctx?.nichosInfo?.find((n) => n.slug === slug)?.nome || slug;
+
+// ---------- Plano do aluno ----------
+// O admin vê tudo (precisa conferir as telas do Pro).
+export const ehPro = (ctx) =>
+  ctx?.plano === "pro" || ctx?.perfil?.papel === "admin";
+
+export const nomePlano = (ctx) => (ehPro(ctx) ? "Pro" : "Standard");

@@ -7,6 +7,7 @@ import { ic } from "../lib/icons.js";
 import { logoHTML } from "../lib/logo.js";
 import { restPublico } from "../lib/supabase.js";
 import { mapaConfig } from "../lib/dados.js";
+import { PLANOS, PLANO_PADRAO } from "../config.js";
 import * as VideoSlot from "../components/VideoSlot.js";
 
 const soDigitos = (s) => String(s || "").replace(/\D/g, "");
@@ -14,10 +15,11 @@ const soDigitos = (s) => String(s || "").replace(/\D/g, "");
 const FAQ = [
   ["Preciso ir ao Paraguai?", "Não necessariamente. Você pode comprar de fornecedores à distância e receber no Brasil. O curso mostra os dois caminhos."],
   ["Preciso de CNPJ?", "Dá para começar sem, mas formalizar ajuda na nota fiscal e no crescimento. Explicamos quando e por que vale a pena."],
-  ["Quanto preciso para começar?", "Depende do nicho e do pedido mínimo. A calculadora ajuda a planejar o investimento antes de comprar."],
+  ["Quanto preciso para começar?", "Depende do produto e do pedido mínimo da loja. A calculadora ajuda a planejar o investimento antes de comprar."],
   ["Quanto tempo leva para chegar?", "Varia conforme o caminho e o freteiro. Mostramos os prazos médios e como acompanhar."],
   ["Como recebo o acesso?", "Depois da compra, o acesso é liberado para o seu número. Você entra com número e senha."],
-  ["Posso tirar dúvidas?", "Sim. Você fala com a equipe pelo suporte e pode contratar uma mentoria individual."],
+  ["Qual a diferença entre Standard e Pro?", "O Standard ensina o caminho completo e libera as ferramentas. O Pro ainda abre todos os fornecedores, o grupo de compras coletivas e a mentoria exclusiva com chamadas."],
+  ["Posso começar no Standard e migrar depois?", "Sim. Você migra para o Pro quando quiser, direto dentro da plataforma."],
 ];
 
 export async function montar(container) {
@@ -31,11 +33,42 @@ export async function montar(container) {
     v0 = (vids || [])[0] || { id: "V0", titulo: "Vídeo de vendas" };
   } catch { v0 = { id: "V0", titulo: "Vídeo de vendas" }; }
 
-  const preco = brl(+(config.preco_curso || 49.9));
+  const vStandard = +(config.plano_standard_valor || config.preco_curso || PLANO_PADRAO.standard_valor);
+  const vPro = +(config.plano_pro_valor || PLANO_PADRAO.pro_valor);
+  const vRec = +(config.plano_pro_recorrencia || PLANO_PADRAO.pro_recorrencia);
+  const preco = brl(vStandard);
   const suporte = soDigitos(config.whatsapp_suporte);
   const checkout = config.url_checkout
-    || (suporte ? `https://wa.me/${suporte}?text=${encodeURIComponent("Quero comprar o curso Paraguai Academy.")}` : "#/entrar");
+    || (suporte ? `https://wa.me/${suporte}?text=${encodeURIComponent("Quero o plano Standard da Paraguai Academy.")}` : "#/entrar");
+  const checkoutPro = config.url_checkout_pro
+    || (suporte ? `https://wa.me/${suporte}?text=${encodeURIComponent("Quero o plano Pro da Paraguai Academy.")}` : "#/entrar");
   const alvoCheckout = /^https?:/.test(checkout) ? ' target="_blank" rel="noopener"' : "";
+  const alvoPro = /^https?:/.test(checkoutPro) ? ' target="_blank" rel="noopener"' : "";
+
+  const listaPlano = (itens, fora = []) =>
+    itens.map((i) => `<li class="ok">${ic("check", 15)} ${esc(i)}</li>`).join("") +
+    fora.map((i) => `<li class="fora">${ic("x", 15)} ${esc(i)}</li>`).join("");
+
+  const blocoPlanos = `
+    <div class="planos-grid mt-3">
+      <div class="plano-card">
+        <div class="plano-topo"><b>${PLANOS.standard.nome}</b></div>
+        <p class="muted">${esc(PLANOS.standard.chamada)}</p>
+        <div class="plano-preco"><b>${brl(vStandard)}</b><span class="muted">pagamento único</span></div>
+        <ul class="plano-lista">${listaPlano(PLANOS.standard.inclui, PLANOS.standard.naoInclui)}</ul>
+        <a class="btn plain block mt-3" data-cta ${alvoCheckout} href="${esc(checkout)}">Começar no Standard</a>
+      </div>
+      <div class="plano-card destaque">
+        <span class="plano-fita">${ic("star", 12)} Mais completo</span>
+        <div class="plano-topo"><b>${PLANOS.pro.nome}</b></div>
+        <p class="muted">${esc(PLANOS.pro.chamada)}</p>
+        <div class="plano-preco"><b>${brl(vPro)}</b><span class="muted">de entrada</span></div>
+        <div class="plano-recorrencia">+ ${brl(vRec)} por trimestre
+          <span class="muted">para manter o grupo de compras coletivas, a mentoria, as dicas e as promoções</span></div>
+        <ul class="plano-lista">${listaPlano(PLANOS.pro.inclui)}</ul>
+        <a class="btn block mt-3" data-cta ${alvoPro} href="${esc(checkoutPro)}">Quero o Pro</a>
+      </div>
+    </div>`;
 
   const aprender = ETAPAS.map((e) =>
     `<div class="aprender-item"><span class="num">${e.numero}</span>
@@ -60,11 +93,11 @@ export async function montar(container) {
         <p class="sub">Fornecedores de confiança, travessia, nota fiscal e envio, tudo em 8 etapas curtas.</p>
         <div class="pub-video mt-4"><span class="pill-gratis">Aula grátis</span>
           ${VideoSlot.html(v0, { semAssistir: true })}</div>
-        ${cta(`Quero acessar o curso por ${preco}`)}
+        ${cta(`Quero começar por ${preco}`)}
         <p class="pub-selos mt-2">
-          <span>${ic("check", 14)} Pagamento único</span>
+          <span>${ic("check", 14)} A partir de ${preco}, pagamento único</span>
           <span>${ic("check", 14)} Acesso para sempre</span>
-          <span>${ic("check", 14)} 1 nicho incluso</span></p>
+          <span>${ic("check", 14)} Dois planos: Standard e Pro</span></p>
       </section>
 
       <section class="mt-5"><h2>O que você vai <span class="amarelo">aprender</span></h2>
@@ -96,10 +129,10 @@ export async function montar(container) {
           <li>Quem não quer seguir as etapas na ordem.</li></ul></div>
       </section>
 
-      <section class="mt-5 pub-preco">
-        <h2>${preco}</h2>
-        <p class="muted">Pagamento único, acesso para sempre, mais um nicho incluso.</p>
-        ${cta(`Quero acessar o curso por ${preco}`)}
+      <section class="mt-5">
+        <h2>Escolha seu <span class="amarelo">plano</span></h2>
+        <p class="sub">O Standard ensina o caminho. O Pro coloca você dentro do grupo que compra junto.</p>
+        ${blocoPlanos}
       </section>
 
       <section class="mt-5"><h2>Perguntas frequentes</h2><div class="mt-3">${faq}</div></section>

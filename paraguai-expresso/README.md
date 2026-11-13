@@ -5,6 +5,26 @@ ferramentas (calculadora, fornecedores, freteiros, envio), página pública de
 vendas e painel de admin. HTML + JavaScript em módulos ES (sem build) +
 Supabase (login, dados, RLS) + funções serverless no Vercel.
 
+## Planos do aluno
+
+| | Standard | Pro |
+|---|---|---|
+| Preço | R$ 49,90 (pagamento único) | R$ 500 de entrada + R$ 49/trimestre |
+| Trilha, calculadora, freteiros, envio | sim | sim |
+| Fornecedores | só os abertos | todos, inclusive os premium |
+| Compras coletivas, mentoria com chamadas, acompanhamento | — | sim |
+
+O plano fica em `perfis.plano` e o admin troca em **Alunos → Virar Pro**. O que
+é do Pro aparece com cadeado para o Standard e leva a `#/app/plano`. Os valores
+ficam em **Configurações** (`plano_standard_valor`, `plano_pro_valor`,
+`plano_pro_recorrencia`, `url_checkout`, `url_checkout_pro`).
+
+Quem protege de verdade é a RLS: a view `fornecedores_lista` apaga o contato das
+lojas premium e as chaves marcadas `so_pro` em `configuracoes` (link do grupo de
+compras coletivas, contato da mentoria) nem são enviadas ao Standard.
+
+Nicho: existe só o **Geral**. Nenhuma tela filtra por nicho.
+
 ## Estrutura
 
 ```
@@ -12,19 +32,20 @@ index.html            Área do aluno (SPA, módulos ES) + página pública
 admin.html            Painel do admin
 app/                  Código da área do aluno
   main.js             Roteador e orquestração
-  auth.js             Login (número + senha) e contexto do aluno
-  config.js           Constantes (URL/chave pública do Supabase, etc.)
+  auth.js             Login (número + senha), contexto e plano do aluno
+  config.js           Constantes (Supabase, planos, rotas)
   content/trilha.js   Conteúdo das 8 etapas (texto editável)
-  components/          VideoSlot, MensagemPronta, Checklist
+  components/         VideoSlot, MensagemPronta, Checklist, Upgrade
   tools/              Fornecedores, Freteiros, Envio, Calculadora
-  pages/              inicio, trilha, etapa, publica, suporte, certificado...
+  pages/              inicio, trilha, etapa, plano, comprasColetivas,
+                      mentoria, publica, suporte, certificado...
   lib/                supabase, dados, calculadora, cotacao, format, icons, dom
   styles/             tokens.css, app.css, componentes.css
 admin/                Painel do admin (sb.js, app.js, admin.css)
 api/                  Funções serverless (Vercel)
   cotacao.js          Cotação USD-BRL (cache 1h)
   admin/              criar-aluno, resetar-senha (usam a service role)
-supabase/             Migrações SQL (APLICAR-TUDO.sql = tudo junto)
+supabase/             Migrações SQL (rode 0001..0008 em ordem)
 test/                 Testes da calculadora (node --test)
 scripts/              criar-aluno.mjs (atalho de terminal; o admin faz isso pela tela)
 ```
@@ -44,7 +65,9 @@ funcionam publicado no Vercel). Testes: `npm test` (ou `node --test test/calcula
 
 ## Banco de dados (Supabase)
 
-1. No Supabase: SQL Editor → cole e rode `supabase/APLICAR-TUDO.sql`.
+1. No Supabase: SQL Editor → cole e rode `supabase/APLICAR-TUDO.sql`
+   (junta as migrações 0001–0009 na ordem; em banco que já existe, rode só os
+   arquivos que faltam, de `supabase/migrations/`).
 2. Authentication → Providers → ative **Phone** (não precisa de SMS).
 3. Crie o usuário admin (Authentication → Users, por e-mail) e promova:
    `update public.perfis set papel='admin' where id=(select id from auth.users where lower(email)='SEU_EMAIL');`
@@ -62,9 +85,9 @@ funcionam publicado no Vercel). Testes: `npm test` (ou `node --test test/calcula
 ## Admin
 
 Acesse `/admin`, entre com o e-mail/senha de uma conta com `papel='admin'`.
-Seções: Alunos (criar conta, liberar/revogar nicho, resetar senha), Vídeos
-(colar URL), Fornecedores, Freteiros, Nota fiscal, Lojas, Produtos (importar
-CSV), Canais de venda e Configurações.
+Seções: Alunos (criar conta, mudar o plano, liberar/revogar acesso, resetar
+senha), Vídeos (colar URL), Fornecedores (marcar **Premium** = só Pro),
+Freteiros, Nota fiscal, Lojas, Produtos (importar CSV) e Configurações.
 ```
 CSV de produtos — colunas: loja, nome, marca, sku, nicho, preco_usd, imagem_url, url, em_estoque
 ```

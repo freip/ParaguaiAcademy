@@ -180,7 +180,7 @@ export const etapaPorNumero = (n) => ETAPAS.find((e) => e.numero === Number(n)) 
 
 // Blocos de texto reutilizados em etapas específicas.
 export const COMO_FUNCIONA = [
-  { n: 1, titulo: "Escolha um produto", texto: "Comece pelo nicho que você liberou." },
+  { n: 1, titulo: "Escolha um produto", texto: "Comece por um produto só, até dominar a conta." },
   { n: 2, titulo: "Estude na ordem", texto: "Cada etapa tem aulas curtas e recursos práticos." },
   { n: 3, titulo: "Calcule o lucro", texto: "Veja quanto vai gastar e ganhar antes de comprar." },
   { n: 4, titulo: "Compre, receba e venda", texto: "Fale com a loja, receba pelo freteiro e venda no Brasil." },

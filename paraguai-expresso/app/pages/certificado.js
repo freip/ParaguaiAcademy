@@ -1,6 +1,6 @@
 // Certificado. Libera só quando as 8 etapas estão concluídas (ou não se
 // aplicam). Impressão/salvar PDF pelo próprio navegador.
-import { trilhaConcluida, nomeNicho } from "../auth.js";
+import { trilhaConcluida, nomePlano } from "../auth.js";
 import { esc, data } from "../lib/format.js";
 import { NOME_PADRAO, TOTAL_ETAPAS } from "../config.js";
 
@@ -13,7 +13,6 @@ export async function montar(ctx, app, view) {
   }
 
   const nome = ctx.perfil?.nome || NOME_PADRAO;
-  const nichos = ctx.nichos.map((s) => nomeNicho(ctx, s)).join(", ") || "Importação";
 
   view.innerHTML = `
     <div class="row-between"><h1>Certificado</h1>
@@ -22,7 +21,7 @@ export async function montar(ctx, app, view) {
       <div class="cert-selo">PARAGUAI <span>ACADEMY</span></div>
       <p class="cert-sub">Certificado de conclusão</p>
       <h2 class="cert-nome">${esc(nome)}</h2>
-      <p class="cert-texto">concluiu a trilha de importação do Paraguai, nas 8 etapas do curso${nichos ? ` — nicho: ${esc(nichos)}` : ""}.</p>
+      <p class="cert-texto">concluiu a trilha de importação do Paraguai, nas ${TOTAL_ETAPAS} etapas do curso — plano ${esc(nomePlano(ctx))}.</p>
       <p class="cert-data">${data(new Date())}</p>
     </div>
     <p class="muted mt-3" style="font-size:13px">Dica: em "Imprimir", escolha "Salvar como PDF".</p>`;
