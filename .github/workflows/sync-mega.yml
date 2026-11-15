@@ -21,4 +21,4 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node paraguai-expresso/scripts/sync-mega.mjs
+        run: node scripts/sync-mega.mjs

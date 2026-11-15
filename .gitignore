@@ -1,0 +1,23 @@
+.vercel
+.env
+.env.*
+node_modules/
+
+# Projetos de outras empresas e rascunhos que moravam neste repositório e
+# acabavam sendo publicados na raiz do site. Saíram do versionamento em
+# novembro/2026; continuam no histórico do Git, recuperáveis com:
+#   git checkout <commit-anterior> -- <pasta>
+conect/
+mirror/
+checkout/
+netlify/
+paraguai-expresso/
+paraguai-expresso-farma/
+screenshots/
+assets/
+snapshot.html
+_MIRROR-REPORT.txt
+DESIGN.md
+PROMPT.md
+*.zip
+download*.jpeg
