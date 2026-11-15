@@ -7,7 +7,7 @@ const CHEVRONS = `<svg class="logo-chevrons" viewBox="0 0 110 90" aria-hidden="t
 
 export function logoHTML({ grande = false } = {}) {
   return `<span class="logo${grande ? " logo-grande" : ""}">
-    <img class="logo-png" src="/public/paraguai-academy-logo.png" alt="Paraguai Academy"
+    <img class="logo-png" src="/midia/paraguai-academy-logo.png" alt="Paraguai Academy"
       onerror="this.style.display='none';this.parentElement.querySelector('.logo-fallback').style.display='inline-flex'">
     <span class="logo-fallback" style="display:none">${CHEVRONS}
       <span class="logo-wm"><b>PARAGUAI</b><small>ACADEMY</small></span></span>

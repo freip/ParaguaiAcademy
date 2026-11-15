@@ -62,7 +62,9 @@ app/                  ÁREA DO ALUNO
     styles/           tokens.css, app.css, componentes.css
   admin/              Painel do admin (sb.js, app.js, admin.css)
 
-public/               Imagens compartilhadas (logo, fotos da fronteira)
+midia/                Imagens compartilhadas (logo, fotos da fronteira)
+                      NAO chamar de public/: a Vercel trata essa pasta como
+                      a raiz do site e esconde todo o resto.
 api/                  Funções serverless (Vercel)
   cotacao.js          Cotação USD-BRL (cache 1h)
   admin/              criar-aluno, resetar-senha (usam a service role)

@@ -10,9 +10,9 @@ export const CONTEUDO = {
   // quebra. As fotos são lidas via CSS (background-image), não <img>, então
   // nem precisam de onerror: arquivo ausente = fundo transparente, e a cor
   // sólida por baixo já resolve.
-  logo: "/public/paraguai-academy-logo.png",
-  fronteiraTopo: "/public/fronteira-topo.jpg",
-  fronteiraFechamento: "/public/fronteira-fechamento.jpg",
+  logo: "/midia/paraguai-academy-logo.png",
+  fronteiraTopo: "/midia/fronteira-topo.jpg",
+  fronteiraFechamento: "/midia/fronteira-fechamento.jpg",
 
   // Preencha a data (ex.: "1 de dezembro") para a barra de prazo aparecer.
   // Vazio = barra escondida (sem data, não tem prazo de verdade).
