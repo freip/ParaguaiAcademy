@@ -2,7 +2,7 @@
 //  1) Preço e contato — vêm do Supabase (`configuracoes`), igual já era.
 //     A página nasce com o valor certo no HTML; este script só corrige se
 //     o banco disser outra coisa, e ainda funciona se o banco cair.
-//  2) Foto, vídeo, prints e números do Mauro — vêm de ./conteudo.js (local,
+//  2) Foto, vídeo e números do Mauro — vêm de ./conteudo.js (local,
 //     sem rede). Campo vazio ali = o bloco correspondente some da página.
 import { SB_URL, SB_KEY, PLANO_PADRAO } from "./app/js/config.js";
 import { embedUrl } from "./app/js/components/VideoSlot.js";
@@ -95,25 +95,13 @@ function aplicarVideo() {
   }
 }
 
-// Prova social: número do grupo VIP e prints de alunos. A seção inteira só
-// aparece se houver pelo menos um dos dois — nada de caixa vazia no ar.
+// Prova social: as fotos e mensagens são estáticas no HTML (seção #provas).
+// Daqui só sai o número do Grupo VIP, que aparece quando alguém o preencher.
 function aplicarProva() {
   const vip = String(CONTEUDO.grupoVip?.contagem || "").trim();
-  const prints = (CONTEUDO.prints || []).filter((p) => p.imagem);
-
-  if (!vip && !prints.length) return; // seção some (fica com o `hidden` do HTML)
-
-  if (vip) {
-    txt("vip-numero", vip);
-    el("selo-vip")?.removeAttribute("hidden");
-  }
-  const alvo = el("prints");
-  if (alvo && prints.length) {
-    alvo.innerHTML = prints.map((p) => `<div class="print-card">
-      <img src="${p.imagem}" alt="" onerror="this.closest('.print-card').remove()">
-      <p>${p.legenda || ""}</p></div>`).join("");
-  }
-  el("secao-prova")?.removeAttribute("hidden");
+  if (!vip) return;
+  txt("vip-numero", vip);
+  el("selo-vip")?.removeAttribute("hidden");
 }
 
 // Quem ensina: some inteira sem bio, foto ou nenhum número.
@@ -142,18 +130,6 @@ function aplicarMauro() {
   }
 
   el("secao-mauro")?.removeAttribute("hidden");
-}
-
-// Print da plataforma: imagem real se houver, senão um retrato desenhado da
-// própria tela de Fornecedores (interface real, não é foto de ninguém).
-function aplicarPrintPlataforma() {
-  const alvo = el("print-plataforma");
-  if (!alvo) return;
-  const img = CONTEUDO.printPlataforma?.imagem;
-  alvo.className = "print-plataforma";
-  alvo.innerHTML = img
-    ? `<img src="${img}" alt="Tela de fornecedores da Paraguai Academy" onerror="this.parentElement.outerHTML=document.getElementById('mock-fornecedores-tpl').innerHTML">`
-    : document.getElementById("mock-fornecedores-tpl")?.innerHTML || "";
 }
 
 // ============================================================
@@ -232,7 +208,6 @@ aplicarPrazo();
 aplicarVideo();
 aplicarProva();
 aplicarMauro();
-aplicarPrintPlataforma();
 barraFixa();
 rastrear();
 try { aplicarConfig(await configuracoes()); } catch { /* fica com os valores do HTML */ }

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baixar o guia | Paraguai Academy</title>
+<meta name="description" content="Baixe o guia gratuito Importe Sem Sair de Casa, da Paraguai Academy.">
+<!-- Página de entrega direta: o link é divulgado, não indexado. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A1C4A">
+<link rel="icon" href="/midia/paraguai-academy-icone.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendas.css">
+</head>
+<body class="solo-body">
+
+<header class="solo-topo">
+  <a class="marca" href="/" aria-label="Paraguai Academy">
+    <img class="marca-logo" src="/midia/paraguai-academy-logo.png" alt="Paraguai Academy"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
+    <span class="marca-fallback">
+      <svg viewBox="0 0 110 90" aria-hidden="true">
+        <path d="M6 8 L30 8 L58 45 L30 82 L6 82 L34 45 Z" fill="#19A35A"/>
+        <path d="M50 8 L74 8 L102 45 L74 82 L50 82 L78 45 Z" fill="#F4B400"/>
+      </svg>
+      <span class="marca-txt"><b>PARAGUAI</b><small>ACADEMY</small></span>
+    </span>
+  </a>
+</header>
+
+<main class="solo">
+  <div class="solo-card">
+    <span class="solo-selo">Guia gratuito</span>
+    <h1>Importe Sem Sair de Casa, <span class="am">com segurança</span></h1>
+    <p class="solo-lead">Seu guia está pronto. É só baixar.</p>
+
+    <!-- O ARQUIVO
+         href     = caminho real do PDF dentro de /midia
+         download = nome com que ele chega no aparelho da pessoa
+         Trocou o PDF? Confira os dois. -->
+    <a class="btn grande" id="btn-download"
+       href="/midia/Paraguai_Academy_Importe_Sem_Sair_de_Casa.pdf"
+       download="Paraguai Academy - Importe Sem Sair de Casa.pdf">
+      <svg class="ic" width="21" height="21" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3v11m0 0 4-4m-4 4-4-4"/>
+        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+      </svg>
+      Baixar o PDF
+    </a>
+
+    <p class="solo-arquivo">
+      <svg class="ic" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/>
+        <path d="M14 3v5h5"/>
+      </svg>
+      PDF · 5 páginas
+    </p>
+
+    <p class="solo-depois">Depois de ler, conheça o caminho completo em 8 etapas:
+      <a href="/">ver o curso da Paraguai Academy</a>.</p>
+  </div>
+</main>
+
+<footer class="solo-pe">
+  <p>© <span id="ano">2026</span> Paraguai Academy</p>
+</footer>
+
+<script>
+  document.getElementById("ano").textContent = new Date().getFullYear();
+
+  // Mede o download no Pixel — só dispara se o Pixel estiver na página,
+  // igual ao rastrear() da página de vendas.
+  document.getElementById("btn-download").addEventListener("click", function () {
+    if (typeof window.fbq === "function") {
+      try { window.fbq("trackCustom", "BaixouPDF"); } catch (e) {}
+    }
+  });
+</script>
+
+</body>
+</html>

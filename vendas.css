@@ -145,17 +145,40 @@ h3{font-size:18px;font-weight:700}
 .fato b{display:block;font-size:15px;color:var(--texto)}
 .fato span{display:block;font-size:13px;color:var(--texto-corpo);margin-top:3px}
 
-/* ---------- Prova (prints de alunos) ---------- */
-.prova-topo{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 22px;margin-bottom:28px}
-.selo-vip{display:inline-flex;flex-direction:column;border:1px dashed var(--azul);border-radius:var(--r);
-  padding:8px 18px}
-.selo-vip b{font-size:22px;color:var(--azul)}
-.selo-vip span{font-size:12px;color:var(--texto-corpo)}
-.prints{display:grid;gap:16px;grid-template-columns:1fr}
-@media(min-width:760px){.prints{grid-template-columns:repeat(3,1fr)}}
-.print-card img{border-radius:var(--r);margin-bottom:10px;width:100%}
-.print-card p{font-size:13.5px;color:var(--texto-corpo)}
-.print-card b{color:var(--texto)}
+/* ---------- Provas (fotos e mensagens reais) ----------
+   A faixa rola sozinha: o trilho tem dois grupos idênticos de fotos e anda
+   -50%, então o fim emenda no começo. Pausa com o mouse em cima; para de
+   vez se o usuário pediu menos movimento (bloco prefers-reduced-motion). */
+.provas{border-top:1px solid var(--linha-escura)}
+.prova-topo{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 22px}
+.selo-vip{display:inline-flex;flex-direction:column;border:1px dashed var(--linha-escura);
+  border-radius:var(--r);padding:8px 18px}
+.selo-vip[hidden]{display:none}
+.selo-vip b{font-size:22px;color:var(--amarelo)}
+.selo-vip span{font-size:12px;color:var(--texto-claro-3)}
+
+.provas-faixa{overflow:hidden;margin-top:34px}
+.provas-trilho{display:flex;width:max-content;animation:provas-rolar 75s linear infinite}
+.provas-faixa:hover .provas-trilho{animation-play-state:paused}
+.provas-grupo{display:flex;gap:14px;padding-right:14px}
+.provas-grupo img{height:230px;width:auto;border-radius:var(--r);flex:none}
+@media(max-width:759px){.provas-grupo img{height:160px}}
+@keyframes provas-rolar{to{transform:translateX(-50%)}}
+
+/* mensagens transcritas dos prints, no formato de balão do WhatsApp */
+.zaps{display:grid;gap:14px;grid-template-columns:1fr;margin-top:30px}
+@media(min-width:760px){.zaps{grid-template-columns:repeat(3,1fr)}}
+.zap-card{background:#E7F8D9;border-radius:14px;border-top-left-radius:4px;
+  padding:16px 18px;margin:0;display:flex;flex-direction:column;gap:12px}
+.zap-card blockquote{margin:0;font-size:14.5px;line-height:1.55;color:#1B2B1B}
+.zap-card blockquote b{color:var(--verde-escuro)}
+.zap-card figcaption{margin-top:auto;display:flex;flex-wrap:wrap;align-items:baseline;
+  gap:4px 10px;font-size:12.5px;color:#55624F}
+.zap-card figcaption b{color:#1B2B1B}
+.zap-card figcaption em{margin-left:auto;font-style:normal;display:inline-flex;
+  align-items:center;gap:4px;font-size:11.5px;color:#55624F}
+.zap-card figcaption em .ic{color:#34B7F1}
+.provas-obs{margin-top:18px;font-size:12px;color:var(--texto-claro-3)}
 
 /* ---------- Três medos ---------- */
 .medos{margin-top:30px;display:flex;flex-direction:column}
@@ -214,34 +237,6 @@ h3{font-size:18px;font-weight:700}
 .etapa h3{font-size:14.5px}
 .etapa p{font-size:13px;color:var(--texto-corpo);margin-top:5px}
 .etapa .ferramenta{display:block;margin-top:9px;font-size:12.5px;font-weight:700;color:var(--verde-escuro)}
-
-/* ---------- Ferramentas (lista + print) ---------- */
-.ferramentas-grid{display:grid;gap:32px;grid-template-columns:1fr;margin-top:30px;align-items:start}
-@media(min-width:860px){.ferramentas-grid{grid-template-columns:1fr 1fr}}
-.ferr-lista{display:flex;flex-direction:column}
-.ferr{display:flex;gap:14px;padding:18px 0;border-top:1px solid var(--linha)}
-.ferr:first-child{border-top:0}
-.ferr .ib{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:11px;
-  background:var(--fundo-claro);color:var(--azul)}
-.ferr h3{font-size:15.5px}
-.ferr p{font-size:14px;color:var(--texto-corpo);margin-top:4px}
-.print-plataforma{border:1px solid var(--linha);border-radius:var(--r-lg);overflow:hidden}
-.print-plataforma img{width:100%}
-
-/* mock desenhado (quando não há print real) */
-.mock-fornecedores{background:var(--branco);padding:20px}
-.mock-fornecedores h4{font-size:13px;color:var(--texto-corpo);text-transform:uppercase;
-  letter-spacing:.6px;margin-bottom:14px}
-.mock-linha{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--linha)}
-.mock-linha:first-of-type{border-top:0}
-.mock-foto{flex:none;width:40px;height:40px;border-radius:9px;background:var(--fundo-claro)}
-.mock-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.mock-info b{font-size:13.5px}
-.mock-info span{font-size:12px;color:var(--texto-corpo)}
-.mock-selo{font-size:10.5px;font-weight:700;color:var(--verde-escuro);background:#EAF7EF;
-  padding:2px 8px;border-radius:var(--r-pill);white-space:nowrap}
-.mock-zap{flex:none;font-size:11.5px;font-weight:700;color:#fff;background:var(--verde);
-  padding:6px 12px;border-radius:var(--r-pill);white-space:nowrap}
 
 /* ---------- Quem ensina ---------- */
 .mauro-grid{display:grid;gap:26px;grid-template-columns:1fr;margin-top:28px;align-items:center}
@@ -350,7 +345,33 @@ h3{font-size:18px;font-weight:700}
   body.com-barra{padding-bottom:80px}
 }
 
+/* ---------- Página de download do PDF (/baixar) ----------
+   Página de um elemento só: logo, cartão com o botão e rodapé. Usa o mesmo
+   azul, o mesmo botão amarelo e a mesma marca da página de vendas. */
+.solo-body{background:var(--azul-escuro);color:var(--texto-claro-2);
+  min-height:100vh;display:flex;flex-direction:column}
+.solo-topo{max-width:var(--max);width:100%;margin:0 auto;padding:18px 20px}
+.solo{flex:1;display:grid;place-items:center;padding:24px 20px 56px}
+.solo-card{background:var(--branco);color:var(--texto);border-radius:var(--r-lg);
+  padding:40px 32px;width:100%;max-width:520px;text-align:center}
+@media(max-width:480px){.solo-card{padding:32px 22px}}
+.solo-selo{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--verde-escuro);background:#EAF7EF;
+  padding:6px 14px;border-radius:var(--r-pill)}
+.solo-card h1{font-size:clamp(24px,5vw,32px);margin-top:18px}
+.solo-card .am{color:#B8860B}
+.solo-lead{font-size:16px;color:var(--texto-corpo);margin-top:12px}
+.solo-card .btn{margin-top:26px;width:100%}
+.solo-arquivo{display:inline-flex;align-items:center;gap:7px;margin-top:16px;
+  font-size:12.5px;color:var(--texto-corpo)}
+.solo-depois{margin-top:24px;padding-top:20px;border-top:1px solid var(--linha);
+  font-size:13.5px;color:var(--texto-corpo)}
+.solo-depois a{color:var(--azul);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.solo-pe{text-align:center;padding:0 20px 28px;font-size:12.5px;color:var(--texto-claro-3)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
+  /* sem animação, a faixa de provas vira um carrossel manual */
+  .provas-faixa{overflow-x:auto}
 }

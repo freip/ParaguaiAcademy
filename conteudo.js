@@ -1,5 +1,5 @@
 // Conteúdo editável da página de vendas que não vem do Supabase: fotos,
-// vídeo, prints e números que só existem quando alguém os fornece.
+// vídeo e números que só existem quando alguém os fornece.
 //
 // Regra única: campo vazio ("" ou []) → o bloco correspondente some da
 // página sozinho. Nada aqui é inventado — os números e depoimentos reais
@@ -34,17 +34,11 @@ export const CONTEUDO = {
   },
 
   // Pessoas no grupo VIP. Vazio = não mostra o número (não inventamos).
+  // As fotos e mensagens da seção de provas são estáticas no index.html
+  // (arquivos em /midia/provas/) — aqui só entra o número do grupo.
   grupoVip: {
     contagem: "",
   },
-
-  // Prints reais de alunos (mercadoria chegando, conta fechada, golpe
-  // evitado). Cada item só aparece se tiver `imagem`.
-  prints: [
-    { imagem: "", legenda: "Mercadoria que chegou. Foto da caixa aberta, com nome e cidade do aluno." },
-    { imagem: "", legenda: "A conta fechada. Aluno mostrando o custo por unidade e por quanto vende." },
-    { imagem: "", legenda: "Golpe evitado. Alguém que ia pagar uma loja falsa e conferiu a lista antes." },
-  ],
 
   // Quem ensina. A seção inteira some se não houver nem bio nem foto nem
   // nenhum dos três números.
@@ -54,11 +48,5 @@ export const CONTEUDO = {
     anos: "",     // anos comprando no Paraguai
     alunos: "",   // alunos atendidos
     lojas: "",    // lojas verificadas na lista
-  },
-
-  // Print real da tela de Fornecedores. Sem imagem, mostra um retrato
-  // desenhado da própria tela (não é foto de ninguém, é a interface real).
-  printPlataforma: {
-    imagem: "",
   },
 };
