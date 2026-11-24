@@ -15,15 +15,16 @@
 -- ---------------------------------------------------------------------
 -- `descricao` guarda a categoria porque a busca da tela varre nome, descrição
 -- e cidade — assim o aluno acha digitando "óculos" ou "eletrônicos".
--- `verificado` entra como false de propósito: o selo "Verificado" é uma
--- afirmação sua para o aluno, não nossa. Veja o passo 3 para ligar o selo.
+-- `verificado` entra como true: o dono do curso confirmou que conferiu estas
+-- lojas (decidido depois do 0011 original; o 0012 liga o selo em banco que já
+-- rodou este arquivo).
 -- Pedido mínimo, pagamento e prazo ficam nulos (não temos o dado); a tela
 -- simplesmente não desenha a linha vazia.
 insert into public.fornecedores
   (nome, pais, cidade, nichos, descricao, contato_nome, whatsapp,
    verificado, premium, ativo)
 select v.nome, v.pais, v.cidade, '{geral}', v.descricao,
-       nullif(v.contato, ''), v.zap, false, false, true
+       nullif(v.contato, ''), v.zap, true, false, true
 from (values
   -- ---------- Perfumes e cosméticos (Ciudad del Este) ----------
   ('H3 (Agatres)',                  'PY', 'Ciudad del Este', 'Perfumes e cosméticos.',                        'Aya',              '595993513100'),
@@ -52,7 +53,7 @@ from (values
   -- ---------- Eletrônicos e celulares ----------
   -- Atacado Connect e Loja Roma também vendem eletrônicos: não viram cadastro
   -- novo, a categoria entrou na descrição deles lá em cima.
-  ('Alex Iphone Swap',              'BR', null,              'Eletrônicos e celulares — iPhone.',             'Alex',             '554598619254'),
+  ('Alex Iphone Swap',              'BR', null,              'Eletrônicos e celulares — iPhone.',             'Alex',             '5545998619254'),
 
   -- ---------- Acessórios e outros (Ciudad del Este) ----------
   ('Fátima (Óculos)',               'PY', 'Ciudad del Este', 'Óculos.',                                       'Fátima',           '595991787777'),
@@ -75,26 +76,15 @@ update public.fornecedores set ativo = false
   where nome like '%[EXEMPLO]%';
 
 -- ---------------------------------------------------------------------
--- 3) Dois pontos para você conferir depois
+-- 3) Um ponto para você conferir depois
 -- ---------------------------------------------------------------------
--- a) ALEX IPHONE SWAP — o número veio como +55 45 9861-9254, que tem 8 dígitos
---    depois do DDD. Celular no Brasil tem 9 (começa com 9), então salvamos
---    exatamente o que você mandou, sem inventar dígito. Se o número certo for
---    (45) 99861-9254, rode:
+-- ALEX IPHONE SWAP — o número chegou como +55 45 9861-9254, com 8 dígitos
+-- depois do DDD; celular no Brasil tem 9. Gravamos (45) 99861-9254, o nono
+-- dígito acrescentado a pedido seu. Mande uma mensagem para confirmar antes de
+-- o primeiro aluno mandar.
 --
---      update public.fornecedores set whatsapp = '5545998619254'
---        where nome = 'Alex Iphone Swap';
---
---    A cidade dele ficou vazia por isso mesmo: DDD 45 cobre o oeste do Paraná
---    inteiro, não dá para afirmar Foz do Iguaçu. Preencha no painel.
---
--- b) SELO "VERIFICADO" — todos entraram sem o selo. Para ligar em todos os que
---    você já conferiu pessoalmente:
---
---      update public.fornecedores set verificado = true
---        where pais = 'PY' and ativo and nome <> 'Rota Árabe';
---
---    Ou marque loja por loja em Admin → Fornecedores.
+-- A cidade dele está vazia de propósito: DDD 45 cobre o oeste do Paraná
+-- inteiro, não dá para afirmar Foz do Iguaçu. Preencha no painel.
 
 -- Confira como ficou:
 --   select nome, cidade, contato_nome, whatsapp, descricao

@@ -2,7 +2,7 @@
 -- Paraguai Academy - Banco completo
 -- Cole TUDO isto no Supabase: SQL Editor > New query > Run. Rode uma vez.
 -- Pode rodar de novo sem duplicar nem apagar o que ja existe (idempotente).
--- Gerado a partir de migrations/0001..0011 (a ordem importa).
+-- Gerado a partir de migrations/0001..0012 (a ordem importa).
 -- =====================================================================
 
 -- #####################################################################
@@ -1149,7 +1149,7 @@ insert into public.fornecedores
   (nome, pais, cidade, nichos, descricao, contato_nome, whatsapp,
    verificado, premium, ativo)
 select v.nome, v.pais, v.cidade, '{geral}', v.descricao,
-       nullif(v.contato, ''), v.zap, false, false, true
+       nullif(v.contato, ''), v.zap, true, false, true
 from (values
   -- ---------- Perfumes e cosméticos (Ciudad del Este) ----------
   ('H3 (Agatres)',                  'PY', 'Ciudad del Este', 'Perfumes e cosméticos.',                        'Aya',              '595993513100'),
@@ -1178,7 +1178,7 @@ from (values
   -- ---------- Eletrônicos e celulares ----------
   -- Atacado Connect e Loja Roma também vendem eletrônicos: não viram cadastro
   -- novo, a categoria entrou na descrição deles lá em cima.
-  ('Alex Iphone Swap',              'BR', null,              'Eletrônicos e celulares — iPhone.',             'Alex',             '554598619254'),
+  ('Alex Iphone Swap',              'BR', null,              'Eletrônicos e celulares — iPhone.',             'Alex',             '5545998619254'),
 
   -- ---------- Acessórios e outros (Ciudad del Este) ----------
   ('Fátima (Óculos)',               'PY', 'Ciudad del Este', 'Óculos.',                                       'Fátima',           '595991787777'),
@@ -1225,3 +1225,49 @@ update public.fornecedores set ativo = false
 -- Confira como ficou:
 --   select nome, cidade, contato_nome, whatsapp, descricao
 --     from public.fornecedores where ativo order by cidade, nome;
+
+-- #####################################################################
+-- ARQUIVO: 0012_verificado_e_zap_alex.sql
+-- #####################################################################
+-- =====================================================================
+-- Paraguai Academy — 0012_verificado_e_zap_alex.sql
+-- Dois ajustes nos fornecedores, decididos depois do 0011:
+--   1) O nono dígito no WhatsApp do Alex Iphone Swap.
+--   2) O selo "Verificado" ligado em todas as lojas ativas.
+--
+-- Por que um arquivo novo em vez de editar o 0011: o insert de lá tem guarda
+-- `where not exists`, então rodar o 0011 de novo NÃO corrige linha que já
+-- existe. Este arquivo usa `update` e funciona nos dois casos — banco que já
+-- rodou o 0011 e banco novo (onde ele só confirma o que o 0011 já gravou).
+-- Rode no SQL Editor do Supabase.
+-- =====================================================================
+
+-- ---------------------------------------------------------------------
+-- 1) WhatsApp do Alex Iphone Swap
+-- ---------------------------------------------------------------------
+-- Veio como +55 45 9861-9254 (8 dígitos depois do DDD); celular no Brasil tem
+-- 9 e começa com 9. Fica (45) 99861-9254 → 5545998619254.
+-- Ainda vale mandar uma mensagem para confirmar que é o número certo antes de
+-- o primeiro aluno mandar.
+update public.fornecedores
+   set whatsapp = '5545998619254'
+ where nome = 'Alex Iphone Swap'
+   and whatsapp <> '5545998619254';
+
+-- ---------------------------------------------------------------------
+-- 2) Selo "Verificado" em todas as lojas ativas
+-- ---------------------------------------------------------------------
+-- Alinha o que o aluno vê com o que a página de vendas promete ("as lojas já
+-- verificadas"). Só as ativas: os cadastros [EXEMPLO] que o 0011 desativou não
+-- levam selo, senão voltariam com ele se alguém os reativasse.
+update public.fornecedores
+   set verificado = true
+ where ativo
+   and not verificado;
+
+-- Confira como ficou (espera-se 0 linhas sem selo):
+--   select nome, verificado, whatsapp from public.fornecedores
+--    where ativo and not verificado;
+--
+--   select nome, whatsapp from public.fornecedores
+--    where nome = 'Alex Iphone Swap';

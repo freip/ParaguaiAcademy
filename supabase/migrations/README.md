@@ -19,9 +19,14 @@ No Supabase do projeto: **SQL Editor > New query**, cole e rode **em ordem**:
 9. `0009_fecha_vitrine.sql` — fecha a vitrine de fornecedores para quem não tem login.
 10. `0010_contatos_e_promo.sql` — WhatsApp do suporte e da mentoria, preço cheio da promoção.
 11. `0011_fornecedores_reais.sql` — a lista real de fornecedores (29 lojas) e os cadastros `[EXEMPLO]` desativados.
+12. `0012_verificado_e_zap_alex.sql` — selo **Verificado** em todas as lojas ativas e o nono dígito no WhatsApp do Alex.
 
-> `APLICAR-TUDO.sql` junta os 11 arquivos na ordem certa — é o atalho para um
+> `APLICAR-TUDO.sql` junta os 12 arquivos na ordem certa — é o atalho para um
 > banco novo. Em banco que já existe, rode só os que faltam.
+
+> O 0012 existe porque o insert do 0011 tem guarda `where not exists`: rodar o
+> 0011 de novo não corrige linha que já está no banco. Correção de dado que já
+> entrou vem sempre em arquivo novo, com `update`.
 
 Pode rodar de novo quando quiser: os arquivos são idempotentes e **não apagam**
 o que o admin já cadastrou. Rode sempre **em ordem**: 0006 solta bloqueios que
