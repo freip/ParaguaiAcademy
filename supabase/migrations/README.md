@@ -17,8 +17,10 @@ No Supabase do projeto: **SQL Editor > New query**, cole e rode **em ordem**:
 7. `0007_produtos_abertos.sql` — a calculadora mostra todos os produtos.
 8. `0008_planos.sql` — nicho único **Geral** e os dois planos (**Standard** e **Pro**).
 9. `0009_fecha_vitrine.sql` — fecha a vitrine de fornecedores para quem não tem login.
+10. `0010_contatos_e_promo.sql` — WhatsApp do suporte e da mentoria, preço cheio da promoção.
+11. `0011_fornecedores_reais.sql` — a lista real de fornecedores (29 lojas) e os cadastros `[EXEMPLO]` desativados.
 
-> `APLICAR-TUDO.sql` junta os 9 arquivos na ordem certa — é o atalho para um
+> `APLICAR-TUDO.sql` junta os 11 arquivos na ordem certa — é o atalho para um
 > banco novo. Em banco que já existe, rode só os que faltam.
 
 Pode rodar de novo quando quiser: os arquivos são idempotentes e **não apagam**

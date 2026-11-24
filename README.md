@@ -68,7 +68,7 @@ midia/                Imagens compartilhadas (logo, fotos da fronteira)
 api/                  Funções serverless (Vercel)
   cotacao.js          Cotação USD-BRL (cache 1h)
   admin/              criar-aluno, resetar-senha (usam a service role)
-supabase/             Migrações SQL (rode 0001..0010 em ordem)
+supabase/             Migrações SQL (rode 0001..0011 em ordem)
 test/                 Testes da calculadora (node --test)
 scripts/              criar-aluno.mjs (atalho de terminal; o admin faz isso pela tela)
 ```
@@ -89,7 +89,7 @@ funcionam publicado no Vercel). Testes: `npm test` (ou `node --test test/calcula
 ## Banco de dados (Supabase)
 
 1. No Supabase: SQL Editor → cole e rode `supabase/APLICAR-TUDO.sql`
-   (junta as migrações 0001–0010 na ordem; em banco que já existe, rode só os
+   (junta as migrações 0001–0011 na ordem; em banco que já existe, rode só os
    arquivos que faltam, de `supabase/migrations/`).
 2. Authentication → Providers → ative **Phone** (não precisa de SMS).
 3. Crie o usuário admin (Authentication → Users, por e-mail) e promova:
